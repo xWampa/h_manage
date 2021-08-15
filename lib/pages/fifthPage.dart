@@ -7,23 +7,37 @@ class FifthPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('TITLE PAGE 5'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Text(
-              'PAGE 5',
-              style: TextStyle(fontSize: 50),
+    return MaterialApp(
+      home: DefaultTabController(
+        length: 3,
+        child: Scaffold(
+          appBar: AppBar(
+            bottom: const TabBar(
+              tabs: [
+                Tab(icon: Icon(Icons.directions_car)),
+                Tab(icon: Icon(Icons.directions_transit)),
+                Tab(icon: Icon(Icons.directions_bike)),
+              ],
             ),
-            Text(
-              data,
-              style: TextStyle(fontSize: 20),
-            ),
-          ],
+            title: const Text('Tabs'),
+          ),
+          body: TabBarView(
+            children: [
+              Column(
+                children: [
+                  Tab(icon: Icon(Icons.directions_car)),
+                  ElevatedButton(
+                    child: Text('Go to main'),
+                    onPressed: () {
+                      Navigator.of(context).pushNamed('/');
+                    },
+                  ),
+                ],
+              ),
+              Icon(Icons.directions_transit),
+              Icon(Icons.directions_bike),
+            ],
+          ),
         ),
       ),
     );

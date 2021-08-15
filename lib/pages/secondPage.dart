@@ -23,6 +23,13 @@ class SecondPage extends StatelessWidget {
               data,
               style: TextStyle(fontSize: 20),
             ),
+            ElevatedButton(
+              child: Text('Go to third'),
+              onPressed: () {
+                Navigator.of(context).pushNamed('/third',
+                    arguments: 'You are now on third page, hi from page One');
+              },
+            ),
           ],
         ),
       ),
