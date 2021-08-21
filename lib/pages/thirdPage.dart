@@ -11,7 +11,7 @@ Future<List<User>> fetchUsers(http.Client client) async {
   final response =
   await client.get(Uri.parse('http://192.168.1.134:8888/users'));
 
-  //Using the compute function to run parseUsers in a separate isolate
+  // Using the compute function to run parseUsers in a separate isolate
   return compute(parseUsers, response.body);
 }
 

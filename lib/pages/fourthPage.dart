@@ -36,12 +36,12 @@ class FourthPage extends StatefulWidget {
   final String title;
 
   @override
-  _FourthPage createState() {
-    return _FourthPage();
+  _FourthPageState createState() {
+    return _FourthPageState();
   }
 }
 
-class _FourthPage extends State<FourthPage> {
+class _FourthPageState extends State<FourthPage> {
   final TextEditingController _controllerLogin = TextEditingController();
   final TextEditingController _controllerName = TextEditingController();
   final TextEditingController _controllerEmail = TextEditingController();

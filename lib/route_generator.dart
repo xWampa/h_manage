@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:h_manage/pages/pages.dart';
+import 'package:h_manage/pages/sixthPage.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -25,22 +26,25 @@ class RouteGenerator {
       case '/third':
         return MaterialPageRoute(
             builder: (_) => ThirdPage(
-              title: "TITLE PAGE 3",
-            )
-        );
+                  title: "TITLE PAGE 3",
+                ));
 
       case '/fourth':
         return MaterialPageRoute(
             builder: (_) => FourthPage(
-              title: "comemeloswebosCuarta",
-            )
-        );
-        case '/fifth':
-      return MaterialPageRoute(
-          builder: (_) => FifthPage(
-            data: "comemeloswebosCuarta",
-          )
-      );
+                  title: "comemeloswebosCuarta",
+                ));
+      case '/fifth':
+        return MaterialPageRoute(
+            builder: (_) => FifthPage(
+                  data: "comemeloswebosCuarta",
+                ));
+      case '/sixth':
+          return MaterialPageRoute(
+              builder: (_) => SixthPage(
+                title: 'args',
+              ));
+
       default:
         // If there is no such named route in the switch statement, eg /third
         return _errorRoute();
