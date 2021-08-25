@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:h_manage/pages/pages.dart';
-import 'package:h_manage/pages/sixthPage.dart';
+import 'package:h_manage/pages/sixth_page.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
