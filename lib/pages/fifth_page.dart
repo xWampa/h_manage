@@ -15,6 +15,12 @@ import 'package:http/http.dart' as http;
 // TODO: When a table is selected go to Products tab automatically
 // TODO: Move the item() to other file
 // TODO: Prevent further calls when tapping the same table over and over
+// TODO: Add a refresh button on server connection fail
+// TODO: Solve the problem when interacting SUPER-FAST with the server
+//        Maybe create a buffer, a time guard? Do some research
+//      I GOT IT, MAKE EVERYTHING LOCAL UNTIL THE EXIT OF THE PROGRAM OR
+//      WHEN SWITCHING TO AN UNRELATED VIEW OR WHEN SOME TIME ELAPSED
+
 
 class FifthPage extends StatefulWidget {
   final String data;
@@ -31,6 +37,7 @@ class _FifthPageState extends State<FifthPage>
   late TabController _tabController;
   int _selectedTable = 0;
   int _itemsInTable = 0;
+  num _totalTableBill = 0;
   // List<Widget> _itemList = [];
   late Future<List<Product>> listOfDBProducts;
   late Future<List<Tablee>> listOfDBTables;
@@ -103,14 +110,17 @@ class _FifthPageState extends State<FifthPage>
   // New function that updates the future and updates the nº of items badge
   void _newUpdateFuture(int number) {
     int count = 0;
+    num total = 0;
     futureTableBill = ServerRequest.fetchTableTbills(
         http.Client(), number.toString());
      futureTableBill.then((value) {
       for (var item in value){
         count = count + item.units;
+        total = total + num.parse(item.total);
       }
       setState(() {
         _itemsInTable = count;
+        _totalTableBill = total;
         print('Items in table: ' + _itemsInTable.toString());
       });
     });
@@ -231,6 +241,7 @@ class _FifthPageState extends State<FifthPage>
                       return ProductsView(
                         tnumber: _selectedTable,
                         products: snapshot.data!,
+                        updateFuture: (int val) => _newUpdateFuture(val),
                       );
                     } else {
                       return const Center(
@@ -246,8 +257,23 @@ class _FifthPageState extends State<FifthPage>
                       if (snapshot.hasData) {
                         print(snapshot.requireData.length.toString());
                         if (snapshot.requireData.length != 0) {
-                          return PopulateDataTable(
-                            tbills: snapshot.data!,
+                          return Column(
+                            children: [
+                              PopulateDataTable(
+                                tbills: snapshot.data!,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  ElevatedButton(onPressed: (){},
+                                      child: Text('A')),
+                                  ElevatedButton(onPressed: (){},
+                                      child: Text('B')),
+                                  ElevatedButton(onPressed: (){},
+                                      child: Text(_totalTableBill.toString())),
+                                ],
+                              ),
+                            ],
                           );
                         } else {
                           return Center(child: Text('No items yet'));
@@ -308,16 +334,16 @@ class PopulateDataTable extends StatelessWidget {
       );
     }
     return Center(
-      child: DataTable(
-        columns: [
-          const DataColumn(label: Text('Product')),
-          const DataColumn(label: Text('Units')),
-          const DataColumn(label: Text('Price')),
-          const DataColumn(label: Text('Total')),
-        ],
-        rows: itemRow,
-      ),
-    );
+        child: DataTable(
+            columns: [
+              const DataColumn(label: Text('Product')),
+              const DataColumn(label: Text('Units')),
+              const DataColumn(label: Text('Price')),
+              const DataColumn(label: Text('Total')),
+            ],
+            rows: itemRow,
+          ),
+      );
   }
 }
 
@@ -326,10 +352,12 @@ class ProductsView extends StatelessWidget {
   // final Function(String, String) addItem;
   final int tnumber;
   late final Future<Tbill>? futureTbill;
+  final Function(int) updateFuture;
 
   ProductsView({
     Key? key,
     required this.tnumber,
+    required this.updateFuture,
     required this.products,
     // required this.addItem,
   }) : super(key: key);
@@ -359,6 +387,7 @@ class ProductsView extends StatelessWidget {
                 products[index].price,
                 products[index].price,
             );
+            updateFuture(tnumber);
           },
 
             child: Text(products[index].name)
