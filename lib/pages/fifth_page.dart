@@ -21,7 +21,6 @@ import 'package:http/http.dart' as http;
 //      I GOT IT, MAKE EVERYTHING LOCAL UNTIL THE EXIT OF THE PROGRAM OR
 //      WHEN SWITCHING TO AN UNRELATED VIEW OR WHEN SOME TIME ELAPSED
 
-
 class FifthPage extends StatefulWidget {
   final String data;
 
@@ -95,7 +94,7 @@ class _FifthPageState extends State<FifthPage>
   // Keeps updating the nº of items on the selected table (Tab(Row(Text)))
   Widget _resolveNumberOfItemsInTable() {
     if (_itemsInTable == 0) {
-      return Text('0',textAlign: TextAlign.center);
+      return Text('0', textAlign: TextAlign.center);
     }
     return Text(_itemsInTable.toString(), textAlign: TextAlign.center);
   }
@@ -111,21 +110,20 @@ class _FifthPageState extends State<FifthPage>
   void _newUpdateFuture(int number) {
     int count = 0;
     num total = 0;
-    futureTableBill = ServerRequest.fetchTableTbills(
-        http.Client(), number.toString());
-     futureTableBill.then((value) {
-      for (var item in value){
+    futureTableBill =
+        ServerRequest.fetchTableTbills(http.Client(), number.toString());
+    futureTableBill.then((value) {
+      for (var item in value) {
         count = count + item.units;
         total = total + num.parse(item.total);
       }
       setState(() {
         _itemsInTable = count;
         _totalTableBill = total;
-        print('Items in table: ' + _itemsInTable.toString());
+        print('Items in table: ' + _itemsInTable.toStringAsFixed(2));
       });
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -141,16 +139,16 @@ class _FifthPageState extends State<FifthPage>
                 controller: _tabController,
                 tabs: [
                   Tab(icon: Icon(Icons.directions_car)),
-                  Tab(child: Text('Tables'), icon: Icon(Icons.directions_bike)),
+                  Tab(child: Text('Tables'), icon: Icon(Icons.chair_alt)),
                   Tab(
                       child: Text('Products'),
-                      icon: Icon(Icons.directions_transit)),
+                      icon: Icon(Icons.grid_on_rounded)),
                   Tab(
                     child: Text('Bill'),
                     icon: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.directions_transit),
+                        Icon(Icons.format_list_bulleted_rounded),
                         CircleAvatar(
                           backgroundColor: Colors.white,
                           radius: 10,
@@ -164,6 +162,7 @@ class _FifthPageState extends State<FifthPage>
               title: _resolveSelectedTable(),
             ),
             body: TabBarView(
+              physics: NeverScrollableScrollPhysics(),
               controller: _tabController,
               children: [
                 SingleChildScrollView(
@@ -257,23 +256,103 @@ class _FifthPageState extends State<FifthPage>
                       if (snapshot.hasData) {
                         print(snapshot.requireData.length.toString());
                         if (snapshot.requireData.length != 0) {
-                          return Column(
-                            children: [
-                              PopulateDataTable(
-                                tbills: snapshot.data!,
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                          return Scaffold(
+                            body: SingleChildScrollView(
+                              child: Wrap(
+                                alignment: WrapAlignment.center,
+                                spacing: 8.0,
+                                runSpacing: 8.0,
                                 children: [
-                                  ElevatedButton(onPressed: (){},
-                                      child: Text('A')),
-                                  ElevatedButton(onPressed: (){},
-                                      child: Text('B')),
-                                  ElevatedButton(onPressed: (){},
-                                      child: Text(_totalTableBill.toString())),
+                                  PopulateDataTable(
+                                    tbills: snapshot.data!,
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.all(28.0),
+                                    child: Container(
+                                      height: 350,
+                                      width: 350,
+                                      decoration: BoxDecoration(
+                                        color: Colors.blue,
+                                        borderRadius: BorderRadius.circular(15),
+                                      ),
+                                      child: ListView(
+                                        padding: const EdgeInsets.all(8),
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              Text('Text1'),
+                                              Text('Value1')
+                                            ],
+                                          ),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              Text('Text2'),
+                                              Text('Value2')
+                                            ],
+                                          ),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              Text('Text3'),
+                                              Text('Value3')
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
                                 ],
                               ),
-                            ],
+                            ),
+                            floatingActionButton: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                FloatingActionButton(
+                                  child: Icon(Icons.euro_rounded),
+                                  onPressed: () {
+                                    print('a');
+                                    showDialog<String>(
+                                      context: context,
+                                      builder: (BuildContext context) =>
+                                          AlertDialog(
+                                        title: const Text('Alert Dialog Title'),
+                                        content: const Text(
+                                            'Alert Dialog Description'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () => Navigator.pop(
+                                                context, 'Cancel'),
+                                            child: const Text('Cancel'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context, 'OK'),
+                                            child: const Text('OK'),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ),
+                                FloatingActionButton(
+                                  child: Icon(Icons.credit_card),
+                                  onPressed: () {
+                                    print('b');
+                                  },
+                                ),
+                                FloatingActionButton(
+                                  //child: Icon(Icons.add),
+                                  child: Text(
+                                      _totalTableBill.toStringAsFixed(2),
+                                  ),
+                                  onPressed: () {
+                                    print('c');
+                                  },
+                                ),
+                              ],
+                            ),
                           );
                         } else {
                           return Center(child: Text('No items yet'));
@@ -308,7 +387,6 @@ class _FifthPageState extends State<FifthPage>
       ),
     );
   }
-
 }
 
 class PopulateDataTable extends StatelessWidget {
@@ -318,32 +396,34 @@ class PopulateDataTable extends StatelessWidget {
   PopulateDataTable({
     Key? key,
     required this.tbills,
-}) : super(key: key);
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    for(var item in tbills) {
+    for (var item in tbills) {
       itemRow.add(
-        DataRow(cells: [
-          DataCell(Text(item.item)),
-          DataCell(Text(item.units.toString())),
-          DataCell(Text(item.iprice)),
-          DataCell(Text(item.total)),
-        ],
+        DataRow(
+          cells: [
+            DataCell(Text(item.item)),
+            DataCell(Text(item.units.toString())),
+            DataCell(Text(item.iprice)),
+            DataCell(Text(item.total)),
+          ],
         ),
       );
     }
-    return Center(
-        child: DataTable(
-            columns: [
-              const DataColumn(label: Text('Product')),
-              const DataColumn(label: Text('Units')),
-              const DataColumn(label: Text('Price')),
-              const DataColumn(label: Text('Total')),
-            ],
-            rows: itemRow,
-          ),
-      );
+    return Padding(
+      padding: EdgeInsets.all(15.0),
+      child: DataTable(
+        columns: [
+          const DataColumn(label: Text('Product')),
+          const DataColumn(label: Text('Units')),
+          const DataColumn(label: Text('Price')),
+          const DataColumn(label: Text('Total')),
+        ],
+        rows: itemRow,
+      ),
+    );
   }
 }
 
@@ -379,19 +459,17 @@ class ProductsView extends StatelessWidget {
             //   addItem(products[index].name, products[index].price);
             //
             // }
-          onPressed: (){
-            futureTbill = ServerRequest.createTbill(
+            onPressed: () {
+              futureTbill = ServerRequest.createTbill(
                 tnumber,
                 products[index].name,
                 1,
                 products[index].price,
                 products[index].price,
-            );
-            updateFuture(tnumber);
-          },
-
-            child: Text(products[index].name)
-        );
+              );
+              updateFuture(tnumber);
+            },
+            child: Text(products[index].name));
       },
     );
   }
@@ -430,5 +508,3 @@ class TablesView extends StatelessWidget {
     );
   }
 }
-
-

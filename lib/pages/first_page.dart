@@ -8,12 +8,10 @@ class FirstPage extends StatelessWidget {
         title: Text('H MANAGE'),
       ),
       body: Center(
-        child: GridView.count(
-          padding: EdgeInsets.all(15),
-              crossAxisSpacing: 7,
-              mainAxisSpacing: 7,
-              crossAxisCount: 3,
-              children: <Widget>[
+        child: Wrap(
+          spacing: 8.0,
+          runSpacing: 8.0,
+          children: <Widget>[
                 ElevatedButton(
                   child: Text('Go to second'),
                   onPressed: () {
