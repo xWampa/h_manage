@@ -258,52 +258,151 @@ class _FifthPageState extends State<FifthPage>
                         if (snapshot.requireData.length != 0) {
                           return Scaffold(
                             body: SingleChildScrollView(
-                              child: Wrap(
-                                alignment: WrapAlignment.center,
-                                spacing: 8.0,
-                                runSpacing: 8.0,
-                                children: [
-                                  PopulateDataTable(
-                                    tbills: snapshot.data!,
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.all(28.0),
-                                    child: Container(
-                                      height: 350,
-                                      width: 350,
-                                      decoration: BoxDecoration(
-                                        color: Colors.blue,
-                                        borderRadius: BorderRadius.circular(15),
-                                      ),
-                                      child: ListView(
-                                        padding: const EdgeInsets.all(8),
-                                        children: [
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              Text('Text1'),
-                                              Text('Value1')
-                                            ],
-                                          ),
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              Text('Text2'),
-                                              Text('Value2')
-                                            ],
-                                          ),
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              Text('Text3'),
-                                              Text('Value3')
-                                            ],
-                                          ),
-                                        ],
+                              child: Align(
+                                alignment: Alignment.topCenter,
+                                child: Wrap(
+                                  alignment: WrapAlignment.center,
+                                  spacing: 8.0,
+                                  runSpacing: 8.0,
+                                  children: [
+                                    PopulateDataTable(
+                                      tbills: snapshot.data!,
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.all(28.0),
+                                      child: Container(
+                                        height: 250,
+                                        width: 350,
+                                        decoration: BoxDecoration(
+                                          color: Colors.blue.shade50,
+                                          borderRadius: BorderRadius.circular(15),
+                                        ),
+                                        child: ListView(
+                                          padding: const EdgeInsets.all(8),
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Container(
+                                                height: 50,
+                                                width: 350,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.blue,
+                                                  borderRadius: BorderRadius.circular(15),
+                                                ),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.spaceBetween,
+                                                  children: [
+                                                    Padding(
+                                                      padding: const EdgeInsets.all(8.0),
+                                                      child: Text(
+                                                          'Total',
+                                                        style: TextStyle(
+                                                          fontSize: 26,
+                                                          color: Colors.white,
+                                                          fontWeight: FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Padding(
+                                                      padding: const EdgeInsets.all(8.0),
+                                                      child: Text(
+                                                        '288.69',
+                                                        style: TextStyle(
+                                                          fontSize: 28,
+                                                          color: Colors.white,
+                                                          fontWeight: FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Container(
+                                                height: 50,
+                                                width: 350,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.blue,
+                                                  borderRadius: BorderRadius.circular(15),
+                                                ),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.spaceBetween,
+                                                  children: [
+                                                    Padding(
+                                                      padding: const EdgeInsets.all(8.0),
+                                                      child: Text(
+                                                        'Money',
+                                                        style: TextStyle(
+                                                          fontSize: 26,
+                                                          color: Colors.white,
+                                                          fontWeight: FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Padding(
+                                                      padding: const EdgeInsets.all(8.0),
+                                                      child: Text(
+                                                        '500.00',
+                                                        style: TextStyle(
+                                                          fontSize: 28,
+                                                          color: Colors.white,
+                                                          fontWeight: FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Container(
+                                                height: 50,
+                                                width: 350,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.blue,
+                                                  borderRadius: BorderRadius.circular(15),
+                                                ),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.spaceBetween,
+                                                  children: [
+                                                    Padding(
+                                                      padding: const EdgeInsets.all(8.0),
+                                                      child: Text(
+                                                        'Change',
+                                                        style: TextStyle(
+                                                          fontSize: 26,
+                                                          color: Colors.white,
+                                                          fontWeight: FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Padding(
+                                                      padding: const EdgeInsets.all(8.0),
+                                                      child: Text(
+                                                        '211.31',
+                                                        style: TextStyle(
+                                                          fontSize: 28,
+                                                          color: Colors.white,
+                                                          fontWeight: FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                             floatingActionButton: Row(
@@ -345,7 +444,7 @@ class _FifthPageState extends State<FifthPage>
                                 FloatingActionButton(
                                   //child: Icon(Icons.add),
                                   child: Text(
-                                      _totalTableBill.toStringAsFixed(2),
+                                    _totalTableBill.toStringAsFixed(2),
                                   ),
                                   onPressed: () {
                                     print('c');
@@ -357,17 +456,6 @@ class _FifthPageState extends State<FifthPage>
                         } else {
                           return Center(child: Text('No items yet'));
                         }
-                        // return Center(
-                        //   child: DataTable(
-                        //     columns: [
-                        //       const DataColumn(label: Text('Product')),
-                        //       const DataColumn(label: Text('Units')),
-                        //       const DataColumn(label: Text('Price')),
-                        //       const DataColumn(label: Text('Total')),
-                        //     ],
-                        //     rows: populateDataTable(snapshot.requireData),
-                        //   ),
-                        // );
                       } else {
                         return const Center(
                           child: Text('An error has occurred!'),
