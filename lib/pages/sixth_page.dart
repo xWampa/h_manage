@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
+//TODO: Create bills and coins icons
+
 class SixthPage extends StatefulWidget {
-  final String title;
-  SixthPage({Key? key, required this.title}) : super(key: key);
+  final num total;
+  SixthPage({Key? key, required this.total}) : super(key: key);
 
 
   @override
@@ -11,18 +13,26 @@ class SixthPage extends StatefulWidget {
 }
 
 class _SixthPageState extends State<SixthPage> {
-  int _counter = 0;
-  List<int> listaInt = [1,2,3,4,5];
+  @override SixthPage get widget => super.widget;
+  num _counter = 0;
+  List<int> listaInt = [200,100,50,20,10,5];
+  List<double> listaDouble = [2,1,0.5,0.2,0.1,0.05,0.02,0.01];
 
   void _incrementCounter() {
     setState(() {
-      _counter++;
+      _counter = _counter + widget.total;
     });
   }
 
-  void _changeCounter(int number) {
+  void _addMoney(num number) {
     setState(() {
-      _counter = number;
+      _counter = _counter + number;
+    });
+  }
+
+  void _clearMoney() {
+    setState(() {
+      _counter = 0;
     });
   }
 
@@ -33,35 +43,50 @@ class _SixthPageState extends State<SixthPage> {
         title: Text('Hola' + _counter.toString()),
       ),
       body: Center(
-        child: Column(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  'Cash:',
+                ),
+                Text(
+                  _counter.toStringAsFixed(2),
+                  style: Theme.of(context).textTheme.headline4,
+                ),
+                ...tablesView2(listaInt),
+                ButtonWidget(
+                  foreignCount: _counter,
+                  onCountChange: (int val) => setState(() => _counter = val),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(onPressed: () => Navigator.pop(context), child: Text('Atras')),
+                    ElevatedButton(onPressed: () => _clearMoney(), child: Text('Clear')),
+                  ],
+                ),
+              ],
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-            ElevatedButton(onPressed: () => _changeCounter(7), child: Text('7')),
-            ElevatedButton(onPressed: () => _changeCounter(5), child: Text('5')),
-            ...tablesView2(listaInt),
-            ButtonWidget(
-              foreignCount: _counter,
-              onCountChange: (int val) => setState(() => _counter = val),
+    //Coins
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                ...tablesView2(listaDouble),
+              ],
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: "sum",
         onPressed: _incrementCounter,
         tooltip: 'Increment',
         child: Icon(Icons.add),
       ),
     );
-  }
-
-  void yomama(){
   }
 
   void stateSetter() {
@@ -70,14 +95,14 @@ class _SixthPageState extends State<SixthPage> {
     });
   }
 
-  List<Widget> tablesView2 (List<int> listaDeInts){
+  List<Widget> tablesView2 (List<num> listaDeInts){
     List<Widget> botones = [];
     for(var individual in listaDeInts) {
       // botones.add(Text(individual.number.toString()));
       botones.add(
           ElevatedButton(
-            child: Text(individual.toString()),
-            onPressed: () => _changeCounter(individual),
+            child: Text(individual.toString() + '€'),
+            onPressed: () => _addMoney(individual),
           )
       );
     }
@@ -87,7 +112,7 @@ class _SixthPageState extends State<SixthPage> {
 }
 
 class ButtonWidget extends StatelessWidget {
-  final int foreignCount;
+  final num foreignCount;
   final Function(int) onCountChange;
   ButtonWidget({required this.foreignCount, required this.onCountChange });
 

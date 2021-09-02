@@ -307,7 +307,7 @@ class _FifthPageState extends State<FifthPage>
                                                     Padding(
                                                       padding: const EdgeInsets.all(8.0),
                                                       child: Text(
-                                                        '288.69',
+                                                        _totalTableBill.toStringAsFixed(2),
                                                         style: TextStyle(
                                                           fontSize: 28,
                                                           color: Colors.white,
@@ -409,39 +409,43 @@ class _FifthPageState extends State<FifthPage>
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 FloatingActionButton(
+                                  heroTag: "cash",
                                   child: Icon(Icons.euro_rounded),
                                   onPressed: () {
-                                    print('a');
+                                    Navigator.of(context).pushNamed('/sixth',
+                                        arguments: _totalTableBill);
+                                  },
+                                ),
+                                FloatingActionButton(
+                                  heroTag: "card",
+                                  child: Icon(Icons.credit_card),
+                                  onPressed: () {
+                                    print('b');
                                     showDialog<String>(
                                       context: context,
                                       builder: (BuildContext context) =>
                                           AlertDialog(
-                                        title: const Text('Alert Dialog Title'),
-                                        content: const Text(
-                                            'Alert Dialog Description'),
-                                        actions: <Widget>[
-                                          TextButton(
-                                            onPressed: () => Navigator.pop(
-                                                context, 'Cancel'),
-                                            child: const Text('Cancel'),
+                                            title: const Text('Alert Dialog Title'),
+                                            content: const Text(
+                                                'Alert Dialog Description'),
+                                            actions: <Widget>[
+                                              TextButton(
+                                                onPressed: () => Navigator.pop(
+                                                    context, 'Cancel'),
+                                                child: const Text('Cancel'),
+                                              ),
+                                              TextButton(
+                                                onPressed: () =>
+                                                    Navigator.pop(context, 'OK'),
+                                                child: const Text('OK'),
+                                              ),
+                                            ],
                                           ),
-                                          TextButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context, 'OK'),
-                                            child: const Text('OK'),
-                                          ),
-                                        ],
-                                      ),
                                     );
                                   },
                                 ),
                                 FloatingActionButton(
-                                  child: Icon(Icons.credit_card),
-                                  onPressed: () {
-                                    print('b');
-                                  },
-                                ),
-                                FloatingActionButton(
+                                  heroTag: "more",
                                   //child: Icon(Icons.add),
                                   child: Text(
                                     _totalTableBill.toStringAsFixed(2),

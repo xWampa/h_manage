@@ -39,11 +39,16 @@ class RouteGenerator {
             builder: (_) => FifthPage(
                   data: "comemeloswebosCuarta",
                 ));
+
       case '/sixth':
+        if(args is num) {
           return MaterialPageRoute(
-              builder: (_) => SixthPage(
-                title: 'args',
+            builder: (_) =>
+              SixthPage(
+                total: args,
               ));
+        }
+        return _errorRoute();
 
       default:
         // If there is no such named route in the switch statement, eg /third
