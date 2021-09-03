@@ -1,13 +1,15 @@
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:h_manage/data.dart';
+import 'dart:async';
 
+import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
+
+import 'package:h_manage/data.dart';
 import 'package:h_manage/route_generator.dart';
 import 'package:h_manage/server_request.dart';
 
-import 'package:flutter/foundation.dart';
-import 'dart:async';
-import 'package:http/http.dart' as http;
+
 
 // TODO: Force to select a table
 // TODO: Do something when Futures completes with error
@@ -37,6 +39,8 @@ class _FifthPageState extends State<FifthPage>
   int _selectedTable = 0;
   int _itemsInTable = 0;
   num _totalTableBill = 0;
+  num _money = 0;
+  num _change = 0;
   // List<Widget> _itemList = [];
   late Future<List<Product>> listOfDBProducts;
   late Future<List<Tablee>> listOfDBTables;
@@ -123,6 +127,21 @@ class _FifthPageState extends State<FifthPage>
         print('Items in table: ' + _itemsInTable.toStringAsFixed(2));
       });
     });
+  }
+
+  // Updates money and change
+  void updateMoneyAndChange(List<num> money) {
+      setState(() {
+        _money = money[0];
+        _change = money[1];
+      });
+  }
+
+  //Goes to the sixth page and expects a return of money and change
+  void askForMoney(BuildContext context) async {
+    final moneyChange = await Navigator.of(context).pushNamed('/sixth',arguments: _totalTableBill);
+    moneyChange as List<num>;
+    updateMoneyAndChange(moneyChange);
   }
 
   @override
@@ -346,7 +365,7 @@ class _FifthPageState extends State<FifthPage>
                                                     Padding(
                                                       padding: const EdgeInsets.all(8.0),
                                                       child: Text(
-                                                        '500.00',
+                                                        _money.toStringAsFixed(2),
                                                         style: TextStyle(
                                                           fontSize: 28,
                                                           color: Colors.white,
@@ -385,7 +404,7 @@ class _FifthPageState extends State<FifthPage>
                                                     Padding(
                                                       padding: const EdgeInsets.all(8.0),
                                                       child: Text(
-                                                        '211.31',
+                                                        _change.toStringAsFixed(2),
                                                         style: TextStyle(
                                                           fontSize: 28,
                                                           color: Colors.white,
@@ -411,10 +430,7 @@ class _FifthPageState extends State<FifthPage>
                                 FloatingActionButton(
                                   heroTag: "cash",
                                   child: Icon(Icons.euro_rounded),
-                                  onPressed: () {
-                                    Navigator.of(context).pushNamed('/sixth',
-                                        arguments: _totalTableBill);
-                                  },
+                                  onPressed: () => askForMoney(context),
                                 ),
                                 FloatingActionButton(
                                   heroTag: "card",

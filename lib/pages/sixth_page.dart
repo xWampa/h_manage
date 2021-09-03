@@ -18,6 +18,8 @@ class _SixthPageState extends State<SixthPage> {
   List<int> listaInt = [200,100,50,20,10,5];
   List<double> listaDouble = [2,1,0.5,0.2,0.1,0.05,0.02,0.01];
 
+  List<num> moneyChange = [0,0];
+
   void _incrementCounter() {
     setState(() {
       _counter = _counter + widget.total;
@@ -56,16 +58,52 @@ class _SixthPageState extends State<SixthPage> {
                   _counter.toStringAsFixed(2),
                   style: Theme.of(context).textTheme.headline4,
                 ),
-                ...tablesView2(listaInt),
-                ButtonWidget(
-                  foreignCount: _counter,
-                  onCountChange: (int val) => setState(() => _counter = val),
+                Text(
+                  'Total:',
                 ),
+                Text(
+                  widget.total.toStringAsFixed(2),
+                  style: Theme.of(context).textTheme.headline4,
+                ),
+                ...tablesView2(listaInt),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ElevatedButton(onPressed: () => Navigator.pop(context), child: Text('Atras')),
                     ElevatedButton(onPressed: () => _clearMoney(), child: Text('Clear')),
+                    ElevatedButton(
+                      child: Text('OK'),
+                        onPressed: () {
+                        moneyChange[0] = _counter;
+                        moneyChange[1] = _counter - widget.total;
+                        if (moneyChange[1] < 0) {
+                          _clearMoney();
+                          showDialog<String>(
+                            context: context,
+                            builder: (BuildContext context) =>
+                                AlertDialog(
+                                  title: const Text('Not enough money'),
+                                  content: const Text(
+                                      'Please introduce quantity again'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(
+                                          context, 'Cancel'),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.pop(context, 'OK'),
+                                      child: const Text('OK'),
+                                    ),
+                                  ],
+                                ),
+                          );
+                        } else {
+                          Navigator.pop(context, moneyChange);
+                        }
+                      }
+                    ),
                   ],
                 ),
               ],

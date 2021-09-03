@@ -1,10 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:h_manage/data.dart';
-
-import 'package:flutter/foundation.dart';
 import 'dart:async';
 import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+
+import 'package:h_manage/data.dart';
 
 // A function that retrieves the users from the server
 Future<List<User>> fetchUsers(http.Client client) async {
