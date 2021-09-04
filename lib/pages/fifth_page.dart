@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:escpos/escpos.dart';
 
 import 'package:h_manage/data.dart';
 import 'package:h_manage/route_generator.dart';
@@ -48,6 +49,9 @@ class _FifthPageState extends State<FifthPage>
   late Future<List<Tbill>> futureTableBill;
   final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
+
+  PrinterNetworkManager _printerManager = PrinterNetworkManager();
+
 
   onTap() {
     if (_isDisabled[_tabController.index]) {
@@ -144,6 +148,30 @@ class _FifthPageState extends State<FifthPage>
     updateMoneyAndChange(moneyChange);
   }
 
+  void initPrinter() {
+    _printerManager.selectPrinter('http://192.168.1.134',port: 9100, timeout: Duration(seconds: 3));
+  }
+
+  Future<void> _printNow() async {
+    final profile = await CapabilityProfile.load();
+    const PaperSize paper = PaperSize.mm80;
+    Ticket ticket = Ticket(paper, profile);
+    ticket.text('testing');
+    ticket.feed(2);
+    ticket.cut();
+
+    final PosPrintResult result = await _printerManager.printTicket(ticket);
+    print('Print result: ${result.msg}');
+  }
+
+  Future<Ticket> _ticket() async {
+    final profile = await CapabilityProfile.load();
+    const PaperSize paper = PaperSize.mm80;
+    final ticket = Ticket(paper, profile);
+    ticket.text('test');
+    ticket.cut();
+    return ticket;
+  }
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -467,6 +495,7 @@ class _FifthPageState extends State<FifthPage>
                                     _totalTableBill.toStringAsFixed(2),
                                   ),
                                   onPressed: () {
+                                    _printNow();
                                     print('c');
                                   },
                                 ),

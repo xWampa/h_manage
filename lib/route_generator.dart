@@ -50,6 +50,12 @@ class RouteGenerator {
         }
         return _errorRoute();
 
+      case '/seventh':
+        return MaterialPageRoute(
+            builder: (_) => SeventhPage(
+              title: "comemeloswebosCuarta",
+            ));
+
       default:
         // If there is no such named route in the switch statement, eg /third
         return _errorRoute();
