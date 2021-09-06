@@ -83,11 +83,47 @@ class Tbill {
 
   factory Tbill.fromJson(Map<String, dynamic> json) {
     return Tbill(
-        tnumber: json['tnumber'] as int,
-        item: json['item'] as String,
-        units: json['units'] as int,
-        iprice: json['iprice'] as String,
-        total: json['total'] as String,
+      tnumber: json['tnumber'] as int,
+      item: json['item'] as String,
+      units: json['units'] as int,
+      iprice: json['iprice'] as String,
+      total: json['total'] as String,
+    );
+  }
+}
+
+// Create a CashCount object
+class CashCount {
+  final String day;
+  final String netSale;
+  final String cardPayments;
+  final String cashPayments;
+  final int numberSales;
+  final String averageTicket;
+  final String income;
+  final String outfllow;
+
+  const CashCount({
+    required this.day,
+    required this.netSale,
+    required this.cardPayments,
+    required this.cashPayments,
+    required this.numberSales,
+    required this.averageTicket,
+    required this.income,
+    required this.outfllow,
+  });
+
+  factory CashCount.fromJson(Map<String, dynamic> json) {
+    return CashCount(
+      day: json['day'] as String,
+      netSale: json['net_sale'] as String,
+      cardPayments: json['card_payments'] as String,
+      cashPayments: json['cash_payments'] as String,
+      numberSales: json['number_sales'] as int,
+      averageTicket: json['average_ticket'] as String,
+      income: json['income'] as String,
+      outfllow: json['outfllow'] as String,
     );
   }
 }

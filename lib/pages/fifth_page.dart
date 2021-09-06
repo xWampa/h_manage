@@ -1,22 +1,19 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
-import 'package:escpos/escpos.dart';
 
 import 'package:h_manage/data.dart';
 import 'package:h_manage/route_generator.dart';
 import 'package:h_manage/server_request.dart';
 
 
-
-// TODO: Force to select a table
 // TODO: Do something when Futures completes with error
 // TODO: Center the text in the CircleAvatar
 // TODO: When a table is selected go to Products tab automatically
-// TODO: Move the item() to other file
 // TODO: Prevent further calls when tapping the same table over and over
 // TODO: Add a refresh button on server connection fail
 // TODO: Solve the problem when interacting SUPER-FAST with the server
@@ -50,9 +47,6 @@ class _FifthPageState extends State<FifthPage>
   final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
 
-  PrinterNetworkManager _printerManager = PrinterNetworkManager();
-
-
   onTap() {
     if (_isDisabled[_tabController.index]) {
       final snackBar = SnackBar(
@@ -81,6 +75,7 @@ class _FifthPageState extends State<FifthPage>
     futureTableBill = ServerRequest.fetchTbills(http.Client());
     _tabController = TabController(length: 4, vsync: this);
     _tabController.addListener(onTap);
+    ServerRequest.createCashCount();
   }
 
   @override
@@ -110,7 +105,6 @@ class _FifthPageState extends State<FifthPage>
   void _changeSelectedTable(int number) {
     setState(() {
       _selectedTable = number;
-      print("Selected table: " + _selectedTable.toString());
     });
   }
 
@@ -125,53 +119,32 @@ class _FifthPageState extends State<FifthPage>
         count = count + item.units;
         total = total + num.parse(item.total);
       }
+      // Auto change to the products tab when a table is selected
+      if (_tabController.index == 1) _tabController.animateTo(2);
+
       setState(() {
         _itemsInTable = count;
         _totalTableBill = total;
-        print('Items in table: ' + _itemsInTable.toStringAsFixed(2));
       });
     });
   }
 
   // Updates money and change
   void updateMoneyAndChange(List<num> money) {
-      setState(() {
-        _money = money[0];
-        _change = money[1];
-      });
+    setState(() {
+      _money = money[0];
+      _change = money[1];
+    });
   }
 
   //Goes to the sixth page and expects a return of money and change
   void askForMoney(BuildContext context) async {
-    final moneyChange = await Navigator.of(context).pushNamed('/sixth',arguments: _totalTableBill);
+    final moneyChange = await Navigator.of(context)
+        .pushNamed('/sixth', arguments: _totalTableBill);
     moneyChange as List<num>;
     updateMoneyAndChange(moneyChange);
   }
 
-  void initPrinter() {
-    _printerManager.selectPrinter('http://192.168.1.134',port: 9100, timeout: Duration(seconds: 3));
-  }
-
-  Future<void> _printNow() async {
-    final profile = await CapabilityProfile.load();
-    const PaperSize paper = PaperSize.mm80;
-    Ticket ticket = Ticket(paper, profile);
-    ticket.text('testing');
-    ticket.feed(2);
-    ticket.cut();
-
-    final PosPrintResult result = await _printerManager.printTicket(ticket);
-    print('Print result: ${result.msg}');
-  }
-
-  Future<Ticket> _ticket() async {
-    final profile = await CapabilityProfile.load();
-    const PaperSize paper = PaperSize.mm80;
-    final ticket = Ticket(paper, profile);
-    ticket.text('test');
-    ticket.cut();
-    return ticket;
-  }
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -301,7 +274,6 @@ class _FifthPageState extends State<FifthPage>
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.done) {
                       if (snapshot.hasData) {
-                        print(snapshot.requireData.length.toString());
                         if (snapshot.requireData.length != 0) {
                           return Scaffold(
                             body: SingleChildScrollView(
@@ -322,43 +294,54 @@ class _FifthPageState extends State<FifthPage>
                                         width: 350,
                                         decoration: BoxDecoration(
                                           color: Colors.blue.shade50,
-                                          borderRadius: BorderRadius.circular(15),
+                                          borderRadius:
+                                              BorderRadius.circular(15),
                                         ),
                                         child: ListView(
                                           padding: const EdgeInsets.all(8),
                                           children: [
                                             Padding(
-                                              padding: const EdgeInsets.all(8.0),
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
                                               child: Container(
                                                 height: 50,
                                                 width: 350,
                                                 decoration: BoxDecoration(
                                                   color: Colors.blue,
-                                                  borderRadius: BorderRadius.circular(15),
+                                                  borderRadius:
+                                                      BorderRadius.circular(15),
                                                 ),
                                                 child: Row(
                                                   mainAxisAlignment:
-                                                      MainAxisAlignment.spaceBetween,
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
                                                   children: [
                                                     Padding(
-                                                      padding: const EdgeInsets.all(8.0),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8.0),
                                                       child: Text(
-                                                          'Total',
+                                                        'Total',
                                                         style: TextStyle(
                                                           fontSize: 26,
                                                           color: Colors.white,
-                                                          fontWeight: FontWeight.bold,
+                                                          fontWeight:
+                                                              FontWeight.bold,
                                                         ),
                                                       ),
                                                     ),
                                                     Padding(
-                                                      padding: const EdgeInsets.all(8.0),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8.0),
                                                       child: Text(
-                                                        _totalTableBill.toStringAsFixed(2),
+                                                        _totalTableBill
+                                                            .toStringAsFixed(2),
                                                         style: TextStyle(
                                                           fontSize: 28,
                                                           color: Colors.white,
-                                                          fontWeight: FontWeight.bold,
+                                                          fontWeight:
+                                                              FontWeight.bold,
                                                         ),
                                                       ),
                                                     ),
@@ -367,37 +350,47 @@ class _FifthPageState extends State<FifthPage>
                                               ),
                                             ),
                                             Padding(
-                                              padding: const EdgeInsets.all(8.0),
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
                                               child: Container(
                                                 height: 50,
                                                 width: 350,
                                                 decoration: BoxDecoration(
                                                   color: Colors.blue,
-                                                  borderRadius: BorderRadius.circular(15),
+                                                  borderRadius:
+                                                      BorderRadius.circular(15),
                                                 ),
                                                 child: Row(
                                                   mainAxisAlignment:
-                                                      MainAxisAlignment.spaceBetween,
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
                                                   children: [
                                                     Padding(
-                                                      padding: const EdgeInsets.all(8.0),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8.0),
                                                       child: Text(
                                                         'Money',
                                                         style: TextStyle(
                                                           fontSize: 26,
                                                           color: Colors.white,
-                                                          fontWeight: FontWeight.bold,
+                                                          fontWeight:
+                                                              FontWeight.bold,
                                                         ),
                                                       ),
                                                     ),
                                                     Padding(
-                                                      padding: const EdgeInsets.all(8.0),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8.0),
                                                       child: Text(
-                                                        _money.toStringAsFixed(2),
+                                                        _money
+                                                            .toStringAsFixed(2),
                                                         style: TextStyle(
                                                           fontSize: 28,
                                                           color: Colors.white,
-                                                          fontWeight: FontWeight.bold,
+                                                          fontWeight:
+                                                              FontWeight.bold,
                                                         ),
                                                       ),
                                                     ),
@@ -406,37 +399,47 @@ class _FifthPageState extends State<FifthPage>
                                               ),
                                             ),
                                             Padding(
-                                              padding: const EdgeInsets.all(8.0),
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
                                               child: Container(
                                                 height: 50,
                                                 width: 350,
                                                 decoration: BoxDecoration(
                                                   color: Colors.blue,
-                                                  borderRadius: BorderRadius.circular(15),
+                                                  borderRadius:
+                                                      BorderRadius.circular(15),
                                                 ),
                                                 child: Row(
                                                   mainAxisAlignment:
-                                                      MainAxisAlignment.spaceBetween,
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
                                                   children: [
                                                     Padding(
-                                                      padding: const EdgeInsets.all(8.0),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8.0),
                                                       child: Text(
                                                         'Change',
                                                         style: TextStyle(
                                                           fontSize: 26,
                                                           color: Colors.white,
-                                                          fontWeight: FontWeight.bold,
+                                                          fontWeight:
+                                                              FontWeight.bold,
                                                         ),
                                                       ),
                                                     ),
                                                     Padding(
-                                                      padding: const EdgeInsets.all(8.0),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8.0),
                                                       child: Text(
-                                                        _change.toStringAsFixed(2),
+                                                        _change
+                                                            .toStringAsFixed(2),
                                                         style: TextStyle(
                                                           fontSize: 28,
                                                           color: Colors.white,
-                                                          fontWeight: FontWeight.bold,
+                                                          fontWeight:
+                                                              FontWeight.bold,
                                                         ),
                                                       ),
                                                     ),
@@ -464,27 +467,26 @@ class _FifthPageState extends State<FifthPage>
                                   heroTag: "card",
                                   child: Icon(Icons.credit_card),
                                   onPressed: () {
-                                    print('b');
                                     showDialog<String>(
                                       context: context,
                                       builder: (BuildContext context) =>
                                           AlertDialog(
-                                            title: const Text('Alert Dialog Title'),
-                                            content: const Text(
-                                                'Alert Dialog Description'),
-                                            actions: <Widget>[
-                                              TextButton(
-                                                onPressed: () => Navigator.pop(
-                                                    context, 'Cancel'),
-                                                child: const Text('Cancel'),
-                                              ),
-                                              TextButton(
-                                                onPressed: () =>
-                                                    Navigator.pop(context, 'OK'),
-                                                child: const Text('OK'),
-                                              ),
-                                            ],
+                                        title: const Text('Alert Dialog Title'),
+                                        content: const Text(
+                                            'Alert Dialog Description'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () => Navigator.pop(
+                                                context, 'Cancel'),
+                                            child: const Text('Cancel'),
                                           ),
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context, 'OK'),
+                                            child: const Text('OK'),
+                                          ),
+                                        ],
+                                      ),
                                     );
                                   },
                                 ),
@@ -494,10 +496,7 @@ class _FifthPageState extends State<FifthPage>
                                   child: Text(
                                     _totalTableBill.toStringAsFixed(2),
                                   ),
-                                  onPressed: () {
-                                    _printNow();
-                                    print('c');
-                                  },
+                                  onPressed: () {},
                                 ),
                               ],
                             ),
@@ -553,10 +552,42 @@ class PopulateDataTable extends StatelessWidget {
       padding: EdgeInsets.all(15.0),
       child: DataTable(
         columns: [
-          const DataColumn(label: Text('Product')),
-          const DataColumn(label: Text('Units')),
-          const DataColumn(label: Text('Price')),
-          const DataColumn(label: Text('Total')),
+          const DataColumn(
+            label: Text(
+              'Product',
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 20,
+              ),
+            ),
+          ),
+          const DataColumn(
+            label: Text(
+              'Units',
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 20,
+              ),
+            ),
+          ),
+          const DataColumn(
+            label: Text(
+              'Price',
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 20,
+              ),
+            ),
+          ),
+          const DataColumn(
+            label: Text(
+              'Total',
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 20,
+              ),
+            ),
+          ),
         ],
         rows: itemRow,
       ),

@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 
 // TODO: Update server model request regarding format (DECIMAL(10,2))
 
-class ServerRequest{
+class ServerRequest {
   final String host = 'http:192.168.1.134:8888/';
   // Request to obtain all tables
   static Future<List<Tablee>> fetchTables(http.Client client) async {
@@ -28,7 +28,7 @@ class ServerRequest{
   static Future<List<Product>> fetchProducts(http.Client client) async {
     print('Doing a products fetchFunction');
     final response =
-    await client.get(Uri.parse('http://192.168.1.134:8888/products'));
+        await client.get(Uri.parse('http://192.168.1.134:8888/products'));
 
     // Using the compute function to run parseProducts in a separate isolate
     return compute(parseProducts, response.body);
@@ -66,7 +66,7 @@ class ServerRequest{
 
   static Future<List<Tbill>> fetchTbills(http.Client client) async {
     final response =
-    await client.get(Uri.parse('http://192.168.1.134:8888/tbills/'));
+        await client.get(Uri.parse('http://192.168.1.134:8888/tbills/'));
     return compute(parseTbills, response.body);
   }
 
@@ -74,13 +74,22 @@ class ServerRequest{
     final parsed = jsonDecode(responseBody).cast<Map<String, dynamic>>();
     return parsed.map<Tbill>((json) => Tbill.fromJson(json)).toList();
   }
-  static Future<List<Tbill>> fetchTableTbills(http.Client client, String table) async {
-    final response =
-    await client.get(Uri.parse('http://192.168.1.134:8888/tbills/' + table));
+
+  static Future<List<Tbill>> fetchTableTbills(
+      http.Client client, String table) async {
+    final response = await client
+        .get(Uri.parse('http://192.168.1.134:8888/tbills/' + table));
     if (response.statusCode == 404) {
       return [];
     }
     return compute(parseTbills, response.body);
   }
 
+  static Future createCashCount() async {
+    final response =
+        await http.post(Uri.parse('http://192.168.1.134:8888/cash_counts'));
+
+    if (response.statusCode != 200)
+      throw Exception('Failed to create cash count');
+  }
 }
