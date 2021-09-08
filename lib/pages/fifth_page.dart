@@ -13,13 +13,8 @@ import 'package:h_manage/server_request.dart';
 
 // TODO: Do something when Futures completes with error
 // TODO: Center the text in the CircleAvatar
-// TODO: When a table is selected go to Products tab automatically
 // TODO: Prevent further calls when tapping the same table over and over
 // TODO: Add a refresh button on server connection fail
-// TODO: Solve the problem when interacting SUPER-FAST with the server
-//        Maybe create a buffer, a time guard? Do some research
-//      I GOT IT, MAKE EVERYTHING LOCAL UNTIL THE EXIT OF THE PROGRAM OR
-//      WHEN SWITCHING TO AN UNRELATED VIEW OR WHEN SOME TIME ELAPSED
 
 class FifthPage extends StatefulWidget {
   final String data;
@@ -145,6 +140,13 @@ class _FifthPageState extends State<FifthPage>
     updateMoneyAndChange(moneyChange);
   }
 
+  String getDate() {
+    DateTime now = DateTime.now();
+    DateTime date = DateTime(now.year, now.month, now.day);
+    final List<String> finalDate = date.toString().split(" ");
+    return finalDate[0];
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -226,6 +228,11 @@ class _FifthPageState extends State<FifthPage>
                                 arguments: 'I just pressed the new button');
                           },
                           child: Text('I am pretty famous last words')),
+                      ElevatedButton(
+                          onPressed: () {
+                            ServerRequest.updateCashCount(null, null, null, 28, null, null, null, getDate());
+                          },
+                          child: Text('TEST PLACEHOLDER')),
                     ],
                   ),
                 ),
@@ -597,9 +604,7 @@ class PopulateDataTable extends StatelessWidget {
 
 class ProductsView extends StatelessWidget {
   final List<Product> products;
-  // final Function(String, String) addItem;
   final int tnumber;
-  late final Future<Tbill>? futureTbill;
   final Function(int) updateFuture;
 
   ProductsView({
@@ -623,12 +628,8 @@ class ProductsView extends StatelessWidget {
       itemCount: products.length,
       itemBuilder: (context, index) {
         return ElevatedButton(
-            // onPressed: () {
-            //   addItem(products[index].name, products[index].price);
-            //
-            // }
             onPressed: () {
-              futureTbill = ServerRequest.createTbill(
+              ServerRequest.createTbill(
                 tnumber,
                 products[index].name,
                 1,
@@ -675,4 +676,13 @@ class TablesView extends StatelessWidget {
       },
     );
   }
+}
+
+class PetitionCreator {
+  PetitionCreator(int tnumber, String name, int units, String price1, String price2) {
+    _controller.add(ServerRequest.createTbill(tnumber, name, 1, price1, price2));
+  }
+
+  final StreamController<Future<Tbill>> _controller = StreamController<Future<Tbill>>();
+  Stream<Future<Tbill>> get stream => _controller.stream;
 }

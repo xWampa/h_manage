@@ -81,6 +81,7 @@ class _SixthPageState extends State<SixthPage> {
                           showDialog<String>(
                             context: context,
                             builder: (BuildContext context) =>
+                            // TODO: Handle iOS Dialog
                                 AlertDialog(
                                   title: const Text('Not enough money'),
                                   content: const Text(
