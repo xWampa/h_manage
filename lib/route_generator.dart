@@ -41,11 +41,12 @@ class RouteGenerator {
             ));
 
       case '/sixth':
-        if(args is num) {
+        if(args is List<num>) {
           return MaterialPageRoute(
             builder: (_) =>
               SixthPage(
-                total: args,
+                total: args[0],
+                tnumber: args[1],
               ));
         }
         return _errorRoute();

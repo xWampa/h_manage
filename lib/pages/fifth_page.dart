@@ -12,9 +12,10 @@ import 'package:h_manage/server_request.dart';
 
 
 // TODO: Do something when Futures completes with error
-// TODO: Center the text in the CircleAvatar
+// TODO: Center the text in the CircleAvatar (number of items badge)
 // TODO: Prevent further calls when tapping the same table over and over
 // TODO: Add a refresh button on server connection fail
+// TODO: Remove the 1st tab (index 0) and move that to a drawer maybe
 
 class FifthPage extends StatefulWidget {
   final String data;
@@ -34,6 +35,7 @@ class _FifthPageState extends State<FifthPage>
   num _totalTableBill = 0;
   num _money = 0;
   num _change = 0;
+  bool _clearMoneyChange = false;
   // List<Widget> _itemList = [];
   late Future<List<Product>> listOfDBProducts;
   late Future<List<Tablee>> listOfDBTables;
@@ -54,10 +56,15 @@ class _FifthPageState extends State<FifthPage>
       );
       scaffoldMessengerKey.currentState!.showSnackBar(snackBar);
 
-      int index = _tabController.previousIndex;
+      //int index = _tabController.previousIndex;
       setState(() {
-        _tabController.index = index;
+        _tabController.index = 1;
+        //_tabController.animateTo(1);
       });
+    }
+    if (_clearMoneyChange == true) {
+      clearMoneyAndChange();
+      _newUpdateFuture(_selectedTable);
     }
   }
 
@@ -85,7 +92,7 @@ class _FifthPageState extends State<FifthPage>
       _isDisabled = [false, false, true, true];
       return Text('Table: Please select a table');
     }
-    _isDisabled = [false, false, false, false];
+    //_isDisabled = [false, false, false, false];
     return Text('Table: ' + _selectedTable.toString());
   }
 
@@ -101,6 +108,9 @@ class _FifthPageState extends State<FifthPage>
     setState(() {
       _selectedTable = number;
     });
+    _isDisabled = [false, false, false, false];
+    _tabController.index = 2;
+    //_tabController.animateTo(2);
   }
 
   // New function that updates the future and updates the nº of items badge
@@ -115,7 +125,7 @@ class _FifthPageState extends State<FifthPage>
         total = total + num.parse(item.total);
       }
       // Auto change to the products tab when a table is selected
-      if (_tabController.index == 1) _tabController.animateTo(2);
+      //if (_tabController.index == 1) _tabController.animateTo(2);
 
       setState(() {
         _itemsInTable = count;
@@ -132,12 +142,26 @@ class _FifthPageState extends State<FifthPage>
     });
   }
 
+  void clearMoneyAndChange(){
+    _clearMoneyChange = false;
+
+    _isDisabled = [false, false, true, true];
+    setState(() {
+      _money = 0;
+      _change = 0;
+      _selectedTable =0;
+      _tabController.index = 1;
+    });
+    _resolveSelectedTable();
+  }
+
   //Goes to the sixth page and expects a return of money and change
   void askForMoney(BuildContext context) async {
     final moneyChange = await Navigator.of(context)
-        .pushNamed('/sixth', arguments: _totalTableBill);
+        .pushNamed('/sixth', arguments: <num>[_totalTableBill,_selectedTable]);
     moneyChange as List<num>;
     updateMoneyAndChange(moneyChange);
+    _clearMoneyChange = true;
   }
 
   String getDate() {
@@ -230,7 +254,7 @@ class _FifthPageState extends State<FifthPage>
                           child: Text('I am pretty famous last words')),
                       ElevatedButton(
                           onPressed: () {
-                            ServerRequest.updateCashCount(null, null, null, 28, null, null, null, getDate());
+                            ServerRequest.deleteTbill(_selectedTable.toString());
                           },
                           child: Text('TEST PLACEHOLDER')),
                     ],

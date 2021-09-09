@@ -11,8 +11,7 @@ class ServerRequest {
   // Request to obtain all tables
   static Future<List<Tablee>> fetchTables(http.Client client) async {
     print('Doing the table fetchFunction');
-    final response =
-        await client.get(Uri.parse(_host + 'tables'));
+    final response = await client.get(Uri.parse(_host + 'tables'));
 
     // Using the compute function to run parseTables in a separate isolate
     return compute(parseTables, response.body);
@@ -27,8 +26,7 @@ class ServerRequest {
   // Function that retrieves all the products from the server
   static Future<List<Product>> fetchProducts(http.Client client) async {
     print('Doing a products fetchFunction');
-    final response =
-        await client.get(Uri.parse(_host + 'products'));
+    final response = await client.get(Uri.parse(_host + 'products'));
 
     // Using the compute function to run parseProducts in a separate isolate
     return compute(parseProducts, response.body);
@@ -65,8 +63,7 @@ class ServerRequest {
   }
 
   static Future<List<Tbill>> fetchTbills(http.Client client) async {
-    final response =
-        await client.get(Uri.parse(_host + 'tbills/'));
+    final response = await client.get(Uri.parse(_host + 'tbills/'));
     return compute(parseTbills, response.body);
   }
 
@@ -77,8 +74,7 @@ class ServerRequest {
 
   static Future<List<Tbill>> fetchTableTbills(
       http.Client client, String table) async {
-    final response = await client
-        .get(Uri.parse(_host + 'tbills/' + table));
+    final response = await client.get(Uri.parse(_host + 'tbills/' + table));
     if (response.statusCode == 404) {
       return [];
     }
@@ -86,30 +82,36 @@ class ServerRequest {
   }
 
   static Future createCashCount() async {
-    final response =
-        await http.post(Uri.parse(_host + 'cash_counts'));
+    final response = await http.post(Uri.parse(_host + 'cash_counts'));
 
     if (response.statusCode != 200)
       throw Exception('Failed to create cash count');
   }
 
   static Future<CashCount> updateCashCount(
-      String? netSale, String? cardPayments, String? cashPayments, int? numberSales,
-      String? averageTicket, String? income, String? outflow, String day) async{
-    final response = await http.put(Uri.parse(_host + 'cash_counts/' + day),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-        },
-    body: jsonEncode(<String, dynamic>{
-      'netSale': netSale,
-      'cardPayments': cardPayments,
-      'cashPayments': cashPayments,
-      'numberSales': numberSales,
-      'averageTicket': averageTicket,
-      'income': income,
-      'outflow': outflow,
-      'day': day,
-    }),
+      String? netSale,
+      String? cardPayments,
+      String? cashPayments,
+      int? numberSales,
+      String? averageTicket,
+      String? income,
+      String? outflow,
+      String day) async {
+    final response = await http.put(
+      Uri.parse(_host + 'cash_counts/' + day),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'netSale': netSale,
+        'cardPayments': cardPayments,
+        'cashPayments': cashPayments,
+        'numberSales': numberSales,
+        'averageTicket': averageTicket,
+        'income': income,
+        'outflow': outflow,
+        'day': day,
+      }),
     );
 
     if (response.statusCode == 200) {
@@ -117,6 +119,11 @@ class ServerRequest {
     } else {
       throw Exception('Failed to update CashCount');
     }
+  }
 
+  static Future deleteTbill(String tnumber) async{
+    final response = await http.delete(Uri.parse(_host + 'tbills/' + tnumber));
+    if (response.statusCode != 200)
+      throw Exception('Failed to Delete tbillls');
   }
 }

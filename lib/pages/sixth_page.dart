@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:h_manage/server_request.dart';
 
 //TODO: Create bills and coins icons
 
 class SixthPage extends StatefulWidget {
   final num total;
-  SixthPage({Key? key, required this.total}) : super(key: key);
+  final num tnumber;
+  SixthPage({
+    Key? key,
+    required this.total,
+    required this.tnumber
+  }) : super(key: key);
 
 
   @override
@@ -36,6 +42,10 @@ class _SixthPageState extends State<SixthPage> {
     setState(() {
       _counter = 0;
     });
+  }
+
+  void _clearTbills(){
+    ServerRequest.deleteTbill(widget.tnumber.toString());
   }
 
   @override
@@ -101,6 +111,7 @@ class _SixthPageState extends State<SixthPage> {
                                 ),
                           );
                         } else {
+                          _clearTbills();
                           Navigator.pop(context, moneyChange);
                         }
                       }
