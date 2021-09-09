@@ -46,19 +46,34 @@ class _FifthPageState extends State<FifthPage>
 
   onTap() {
     if (_isDisabled[_tabController.index]) {
-      final snackBar = SnackBar(
-        content: Text('Select a table'),
-        duration: const Duration(milliseconds: 1500),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-      );
-      scaffoldMessengerKey.currentState!.showSnackBar(snackBar);
+      if (_isDisabled[2] == true) {
+        final snackBar = SnackBar(
+          content: Text('Select a table'),
+          duration: const Duration(milliseconds: 1500),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+        );
+        scaffoldMessengerKey.currentState!.showSnackBar(snackBar);
+      }
+      if (_isDisabled[2] == false && _isDisabled[3] == true){
+        final snackBar = SnackBar(
+          content: Text('Add items to the table'),
+          duration: const Duration(milliseconds: 1500),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+        );
+        scaffoldMessengerKey.currentState!.showSnackBar(snackBar);
+
+      }
 
       //int index = _tabController.previousIndex;
       setState(() {
-        _tabController.index = 1;
+        if (_isDisabled[2] == true) _tabController.index = 1;
+        if (_isDisabled[2] == false && _isDisabled[3] == true) _tabController.index = 2;
         //_tabController.animateTo(1);
       });
     }
@@ -73,8 +88,7 @@ class _FifthPageState extends State<FifthPage>
     super.initState();
     listOfDBProducts = ServerRequest.fetchProducts(http.Client());
     listOfDBTables = ServerRequest.fetchTables(http.Client());
-    listOfTbills = ServerRequest.fetchTbills(http.Client());
-    futureTableBill = ServerRequest.fetchTbills(http.Client());
+    futureTableBill = Future.value([]);
     _tabController = TabController(length: 4, vsync: this);
     _tabController.addListener(onTap);
     ServerRequest.createCashCount();
@@ -92,7 +106,6 @@ class _FifthPageState extends State<FifthPage>
       _isDisabled = [false, false, true, true];
       return Text('Table: Please select a table');
     }
-    //_isDisabled = [false, false, false, false];
     return Text('Table: ' + _selectedTable.toString());
   }
 
@@ -108,7 +121,7 @@ class _FifthPageState extends State<FifthPage>
     setState(() {
       _selectedTable = number;
     });
-    _isDisabled = [false, false, false, false];
+    _isDisabled = [false, false, false, true];
     _tabController.index = 2;
     //_tabController.animateTo(2);
   }
@@ -124,13 +137,12 @@ class _FifthPageState extends State<FifthPage>
         count = count + item.units;
         total = total + num.parse(item.total);
       }
-      // Auto change to the products tab when a table is selected
-      //if (_tabController.index == 1) _tabController.animateTo(2);
 
       setState(() {
         _itemsInTable = count;
         _totalTableBill = total;
       });
+      if (_itemsInTable != 0) _isDisabled[3] = false;
     });
   }
 
@@ -150,7 +162,8 @@ class _FifthPageState extends State<FifthPage>
       _money = 0;
       _change = 0;
       _selectedTable =0;
-      _tabController.index = 1;
+      if (_isDisabled[2] == true) _tabController.index = 1;
+      if (_isDisabled[2] == false && _isDisabled[3] == true) _tabController.index = 2;
     });
     _resolveSelectedTable();
   }
@@ -271,7 +284,6 @@ class _FifthPageState extends State<FifthPage>
                       return TablesView(
                         tables: snapshot.data!,
                         changeTable: (int val) => _changeSelectedTable(val),
-                        updateFuture: (int val) => _newUpdateFuture(val),
                       );
                     } else {
                       return const Center(
@@ -671,10 +683,8 @@ class ProductsView extends StatelessWidget {
 class TablesView extends StatelessWidget {
   final List<Tablee> tables;
   final Function(int) changeTable;
-  final Function(int) updateFuture;
   TablesView({
     Key? key,
-    required this.updateFuture,
     required this.tables,
     required this.changeTable,
   }) : super(key: key);
@@ -694,7 +704,6 @@ class TablesView extends StatelessWidget {
         return ElevatedButton(
             onPressed: () {
               changeTable(tables[index].number);
-              updateFuture(tables[index].number);
             },
             child: Text(tables[index].number.toString()));
       },
