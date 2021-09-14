@@ -10,12 +10,13 @@ import 'package:h_manage/data.dart';
 import 'package:h_manage/route_generator.dart';
 import 'package:h_manage/server_request.dart';
 
-
 // TODO: Do something when Futures completes with error
 // TODO: Center the text in the CircleAvatar (number of items badge)
 // TODO: Prevent further calls when tapping the same table over and over
 // TODO: Add a refresh button on server connection fail
 // TODO: Remove the 1st tab (index 0) and move that to a drawer maybe
+// TODO: Remove TotalTableBill in the Tables TAB when total is 0
+// TODO: Edit DataCells when possible (waiting for tickets)
 
 class FifthPage extends StatefulWidget {
   final String data;
@@ -36,7 +37,6 @@ class _FifthPageState extends State<FifthPage>
   num _money = 0;
   num _change = 0;
   bool _clearMoneyChange = false;
-  // List<Widget> _itemList = [];
   late Future<List<Product>> listOfDBProducts;
   late Future<List<Tablee>> listOfDBTables;
   late Future<List<Tbill>> listOfTbills;
@@ -57,7 +57,7 @@ class _FifthPageState extends State<FifthPage>
         );
         scaffoldMessengerKey.currentState!.showSnackBar(snackBar);
       }
-      if (_isDisabled[2] == false && _isDisabled[3] == true){
+      if (_isDisabled[2] == false && _isDisabled[3] == true) {
         final snackBar = SnackBar(
           content: Text('Add items to the table'),
           duration: const Duration(milliseconds: 1500),
@@ -67,28 +67,30 @@ class _FifthPageState extends State<FifthPage>
           ),
         );
         scaffoldMessengerKey.currentState!.showSnackBar(snackBar);
-
       }
 
-      //int index = _tabController.previousIndex;
       setState(() {
         if (_isDisabled[2] == true) _tabController.index = 1;
-        if (_isDisabled[2] == false && _isDisabled[3] == true) _tabController.index = 2;
-        //_tabController.animateTo(1);
+        if (_isDisabled[2] == false && _isDisabled[3] == true)
+          _tabController.index = 2;
       });
     }
     if (_clearMoneyChange == true) {
       clearMoneyAndChange();
-      _newUpdateFuture(_selectedTable);
+    }
+
+    if (_tabController.index == 3) {
+      refreshFuture();
+      updateBadge();
     }
   }
 
   @override
   void initState() {
     super.initState();
+    futureTableBill = ServerRequest.newfetchTableTbills(1.toString());
     listOfDBProducts = ServerRequest.fetchProducts(http.Client());
     listOfDBTables = ServerRequest.fetchTables(http.Client());
-    futureTableBill = Future.value([]);
     _tabController = TabController(length: 4, vsync: this);
     _tabController.addListener(onTap);
     ServerRequest.createCashCount();
@@ -121,29 +123,19 @@ class _FifthPageState extends State<FifthPage>
     setState(() {
       _selectedTable = number;
     });
+
+    refreshFuture();
+    updateBadge();
+
     _isDisabled = [false, false, false, true];
+    if (_itemsInTable != 0) _isDisabled[3] = false;
     _tabController.index = 2;
-    //_tabController.animateTo(2);
   }
 
   // New function that updates the future and updates the nº of items badge
   void _newUpdateFuture(int number) {
-    int count = 0;
-    num total = 0;
-    futureTableBill =
-        ServerRequest.fetchTableTbills(http.Client(), number.toString());
-    futureTableBill.then((value) {
-      for (var item in value) {
-        count = count + item.units;
-        total = total + num.parse(item.total);
-      }
-
-      setState(() {
-        _itemsInTable = count;
-        _totalTableBill = total;
-      });
-      if (_itemsInTable != 0) _isDisabled[3] = false;
-    });
+    refreshFuture();
+    updateBadge();
   }
 
   // Updates money and change
@@ -154,29 +146,93 @@ class _FifthPageState extends State<FifthPage>
     });
   }
 
-  void clearMoneyAndChange(){
+  void clearMoneyAndChange() {
     _clearMoneyChange = false;
 
     _isDisabled = [false, false, true, true];
     setState(() {
       _money = 0;
       _change = 0;
-      _selectedTable =0;
+      _selectedTable = 0;
       if (_isDisabled[2] == true) _tabController.index = 1;
-      if (_isDisabled[2] == false && _isDisabled[3] == true) _tabController.index = 2;
+      if (_isDisabled[2] == false && _isDisabled[3] == true)
+        _tabController.index = 2;
     });
     _resolveSelectedTable();
   }
 
-  //Goes to the sixth page and expects a return of money and change
-  void askForMoney(BuildContext context) async {
-    final moneyChange = await Navigator.of(context)
-        .pushNamed('/sixth', arguments: <num>[_totalTableBill,_selectedTable]);
-    moneyChange as List<num>;
-    updateMoneyAndChange(moneyChange);
-    _clearMoneyChange = true;
+  void cardPaymentRoutine() {
+    _isDisabled = [false, false, true, true];
+    ServerRequest.deleteTbill(_selectedTable.toString());
+    ServerRequest.updateCashCount(_totalTableBill.toString(),
+        _totalTableBill.toString(), null, 1, null, null, null, getDate());
+    ServerRequest.updateTable(_selectedTable, 0.toString());
+
+    setState(() {
+      _selectedTable = 0;
+      _itemsInTable = 0;
+      if (_isDisabled[2] == true) _tabController.index = 1;
+      if (_isDisabled[2] == false && _isDisabled[3] == true)
+        _tabController.index = 2;
+      listOfDBTables = ServerRequest.fetchTables(http.Client());
+    });
+    _resolveSelectedTable();
   }
 
+  void refreshFuture() {
+    setState(() {
+      futureTableBill =
+          ServerRequest.newfetchTableTbills(_selectedTable.toString());
+    });
+  }
+
+  void updateBadge() {
+    int count = 0;
+    num total = 0;
+    futureTableBill.then((value) {
+      for (var item in value) {
+        count = count + item.units;
+        total = total + num.parse(item.total);
+      }
+      ServerRequest.updateTable(_selectedTable, total.toString());
+
+      setState(() {
+        _itemsInTable = count;
+        _totalTableBill = total;
+        listOfDBTables = ServerRequest.fetchTables(http.Client());
+      });
+
+      _isDisabled = [false, false, false, true];
+      if (_itemsInTable != 0) _isDisabled[3] = false;
+    });
+  }
+
+  // Goes to the sixth page and expects a return of money and change
+  void askForMoney(BuildContext context) async {
+    final moneyChange = await Navigator.of(context)
+        .pushNamed('/sixth', arguments: <num>[_totalTableBill, _selectedTable]);
+    moneyChange as List<num>;
+    print(moneyChange);
+    if (moneyChange != [0, 0]) {
+      setState(() {
+        listOfDBTables = ServerRequest.fetchTables(http.Client());
+        _money = moneyChange[0];
+        _change = moneyChange[1];
+        _itemsInTable = 0;
+      });
+      _clearMoneyChange = true;
+    }
+  }
+
+  // Goes to the edit_bill_product and edit the tbill entry
+  void editBillProduct(BuildContext context, List<dynamic> tbillEntry) async {
+    print(tbillEntry.toString());
+    final tbillBody = await Navigator.of(context)
+        .pushNamed('/fifth/edit_bill_product', arguments: tbillEntry);
+    tbillBody as List<dynamic>;
+  }
+
+  // Retrieves the current date in format yyyy-mm-dd
   String getDate() {
     DateTime now = DateTime.now();
     DateTime date = DateTime(now.year, now.month, now.day);
@@ -193,6 +249,37 @@ class _FifthPageState extends State<FifthPage>
         child: ScaffoldMessenger(
           key: scaffoldMessengerKey,
           child: Scaffold(
+            drawer: Drawer(
+              child: ListView(
+                children: [
+                  ListTile(
+                    title: Text('HManage'),
+                  ),
+                  ListTile(
+                    title: Text('This is the title'),
+                    leading: Text('This is the leading'),
+                    subtitle: Text('This is the subtitle'),
+                    onTap: () => print("handsome"),
+                    onLongPress: () => print("ugly"),
+                  ),
+                  ListTile(
+                    title: Text('This is the title'),
+                    leading: Text('This is the leading'),
+                    subtitle: Text('This is the subtitle'),
+                  ),
+                  ListTile(
+                    title: Text('This is the title'),
+                    leading: Text('This is the leading'),
+                    subtitle: Text('This is the subtitle'),
+                  ),
+                  ListTile(
+                    title: Text('This is the title'),
+                    leading: Text('This is the leading'),
+                    subtitle: Text('This is the subtitle'),
+                  ),
+                ],
+              ),
+            ),
             appBar: AppBar(
               bottom: TabBar(
                 controller: _tabController,
@@ -267,7 +354,7 @@ class _FifthPageState extends State<FifthPage>
                           child: Text('I am pretty famous last words')),
                       ElevatedButton(
                           onPressed: () {
-                            ServerRequest.deleteTbill(_selectedTable.toString());
+                            ServerRequest.updateTable(1, 10.toString());
                           },
                           child: Text('TEST PLACEHOLDER')),
                     ],
@@ -284,6 +371,7 @@ class _FifthPageState extends State<FifthPage>
                       return TablesView(
                         tables: snapshot.data!,
                         changeTable: (int val) => _changeSelectedTable(val),
+                        //updateFuture: (int val) => _newUpdateFuture(val),
                       );
                     } else {
                       return const Center(
@@ -329,6 +417,8 @@ class _FifthPageState extends State<FifthPage>
                                   children: [
                                     PopulateDataTable(
                                       tbills: snapshot.data!,
+                                      updateTbill: (List<dynamic> val) =>
+                                          editBillProduct(context, val),
                                     ),
                                     Padding(
                                       padding: EdgeInsets.all(28.0),
@@ -504,33 +594,15 @@ class _FifthPageState extends State<FifthPage>
                                 FloatingActionButton(
                                   heroTag: "cash",
                                   child: Icon(Icons.euro_rounded),
-                                  onPressed: () => askForMoney(context),
+                                  onPressed: () {
+                                    askForMoney(context);
+                                  },
                                 ),
                                 FloatingActionButton(
                                   heroTag: "card",
                                   child: Icon(Icons.credit_card),
                                   onPressed: () {
-                                    showDialog<String>(
-                                      context: context,
-                                      builder: (BuildContext context) =>
-                                          AlertDialog(
-                                        title: const Text('Alert Dialog Title'),
-                                        content: const Text(
-                                            'Alert Dialog Description'),
-                                        actions: <Widget>[
-                                          TextButton(
-                                            onPressed: () => Navigator.pop(
-                                                context, 'Cancel'),
-                                            child: const Text('Cancel'),
-                                          ),
-                                          TextButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context, 'OK'),
-                                            child: const Text('OK'),
-                                          ),
-                                        ],
-                                      ),
-                                    );
+                                    cardPaymentRoutine();
                                   },
                                 ),
                                 FloatingActionButton(
@@ -571,10 +643,12 @@ class _FifthPageState extends State<FifthPage>
 class PopulateDataTable extends StatelessWidget {
   final List<Tbill> tbills;
   final List<DataRow> itemRow = [];
+  final Function(List<dynamic>) updateTbill;
 
   PopulateDataTable({
     Key? key,
     required this.tbills,
+    required this.updateTbill,
   }) : super(key: key);
 
   @override
@@ -583,10 +657,19 @@ class PopulateDataTable extends StatelessWidget {
       itemRow.add(
         DataRow(
           cells: [
-            DataCell(Text(item.item)),
             DataCell(Text(item.units.toString())),
+            DataCell(Text(item.item)),
             DataCell(Text(item.iprice)),
             DataCell(Text(item.total)),
+            DataCell(Icon(Icons.edit), onTap: () {
+              updateTbill([
+                item.id,
+                item.units,
+                item.item,
+                item.iprice,
+                item.total,
+              ]);
+            }),
           ],
         ),
       );
@@ -597,7 +680,7 @@ class PopulateDataTable extends StatelessWidget {
         columns: [
           const DataColumn(
             label: Text(
-              'Product',
+              'Units',
               style: TextStyle(
                 fontWeight: FontWeight.w500,
                 fontSize: 20,
@@ -606,7 +689,7 @@ class PopulateDataTable extends StatelessWidget {
           ),
           const DataColumn(
             label: Text(
-              'Units',
+              'Product',
               style: TextStyle(
                 fontWeight: FontWeight.w500,
                 fontSize: 20,
@@ -625,6 +708,15 @@ class PopulateDataTable extends StatelessWidget {
           const DataColumn(
             label: Text(
               'Total',
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 20,
+              ),
+            ),
+          ),
+          const DataColumn(
+            label: Text(
+              '',
               style: TextStyle(
                 fontWeight: FontWeight.w500,
                 fontSize: 20,
@@ -705,17 +797,14 @@ class TablesView extends StatelessWidget {
             onPressed: () {
               changeTable(tables[index].number);
             },
-            child: Text(tables[index].number.toString()));
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(tables[index].number.toString()),
+                Text(tables[index].total),
+              ],
+            ));
       },
     );
   }
-}
-
-class PetitionCreator {
-  PetitionCreator(int tnumber, String name, int units, String price1, String price2) {
-    _controller.add(ServerRequest.createTbill(tnumber, name, 1, price1, price2));
-  }
-
-  final StreamController<Future<Tbill>> _controller = StreamController<Future<Tbill>>();
-  Stream<Future<Tbill>> get stream => _controller.stream;
 }
