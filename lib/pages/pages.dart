@@ -5,3 +5,4 @@ export 'fourth_page.dart';
 export 'fifth_page.dart';
 export 'sixth_page.dart';
 export 'seventh_page.dart';
+export 'edit_bill_product.dart';
