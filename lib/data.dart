@@ -51,22 +51,26 @@ class Product {
 class Tablee {
   final int id;
   final int number;
+  final String total;
 
   const Tablee({
     required this.id,
     required this.number,
+    required this.total,
   });
 
   factory Tablee.fromJson(Map<String, dynamic> json) {
     return Tablee(
       id: json['id'] as int,
       number: json['number'] as int,
+      total: json['total'] as String,
     );
   }
 }
 
 // Create a Tbill object
 class Tbill {
+  final int id;
   final int tnumber;
   final String item;
   final int units;
@@ -74,6 +78,7 @@ class Tbill {
   final String total;
 
   const Tbill({
+    required this.id,
     required this.tnumber,
     required this.item,
     required this.units,
@@ -83,6 +88,7 @@ class Tbill {
 
   factory Tbill.fromJson(Map<String, dynamic> json) {
     return Tbill(
+      id: json['id'] as int,
       tnumber: json['tnumber'] as int,
       item: json['item'] as String,
       units: json['units'] as int,
