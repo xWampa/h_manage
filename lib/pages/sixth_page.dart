@@ -19,6 +19,12 @@ class SixthPage extends StatefulWidget {
 }
 
 class _SixthPageState extends State<SixthPage> {
+  String getDate() {
+    DateTime now = DateTime.now();
+    DateTime date = DateTime(now.year, now.month, now.day);
+    final List<String> finalDate = date.toString().split(" ");
+    return finalDate[0];
+  }
   @override SixthPage get widget => super.widget;
   num _counter = 0;
   List<int> listaInt = [200,100,50,20,10,5];
@@ -45,6 +51,16 @@ class _SixthPageState extends State<SixthPage> {
   }
 
   void _clearTbills(){
+    ServerRequest.updateCashCount(
+        widget.total.toString(),
+        null,
+        widget.total.toString(),
+        1,
+        null,
+        null,
+        null,
+        getDate()
+    );
     ServerRequest.deleteTbill(widget.tnumber.toString());
   }
 
@@ -52,6 +68,12 @@ class _SixthPageState extends State<SixthPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+            icon: Icon(Icons.print, color: Colors.red),
+            onPressed: (){
+            Navigator.pop(context, [0,0]);
+            }
+            ),
         title: Text('Hola' + _counter.toString()),
       ),
       body: Center(
@@ -111,6 +133,9 @@ class _SixthPageState extends State<SixthPage> {
                                 ),
                           );
                         } else {
+                          ServerRequest.updateTable(
+                              int.parse(widget.tnumber.toString()), 0.toString()
+                          );
                           _clearTbills();
                           Navigator.pop(context, moneyChange);
                         }
