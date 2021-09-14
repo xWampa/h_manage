@@ -11,6 +11,7 @@ class RouteGenerator {
       case '/':
         return MaterialPageRoute(builder: (_) => FirstPage());
 
+
       case '/second':
         // Validation of correct data type
         if (args is String) {
@@ -56,6 +57,19 @@ class RouteGenerator {
             builder: (_) => SeventhPage(
               title: "comemeloswebosCuarta",
             ));
+
+      case '/fifth/edit_bill_product':
+        if (args is List<dynamic>) {
+          return MaterialPageRoute(builder: (_) =>
+          EditBillProduct(
+              id: args[0],
+              units: args[1],
+              product: args[2],
+              price: args[3],
+              total: args[4],
+          ));
+        }
+        return _errorRoute();
 
       default:
         // If there is no such named route in the switch statement, eg /third
