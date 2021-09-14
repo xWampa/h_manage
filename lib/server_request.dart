@@ -69,12 +69,47 @@ class ServerRequest {
 
   static List<Tbill> parseTbills(String responseBody) {
     final parsed = jsonDecode(responseBody).cast<Map<String, dynamic>>();
+    print(responseBody.toString());
     return parsed.map<Tbill>((json) => Tbill.fromJson(json)).toList();
+  }
+
+  static updateTbill(
+      int tbillId,
+      int tnumber,
+      String item,
+      int units,
+      String iprice,
+      String total) async {
+    final response = await http.put(
+        Uri.parse(_host + "tbills/" + tbillId.toString()),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      body: jsonEncode(<String, dynamic>{
+        'tbillId': tbillId,
+        'tnumber': tnumber,
+        'item': item,
+        'units': units,
+        'iprice': iprice,
+        'total': total,
+      }),
+    );
+
+    if (response.statusCode != 200)
+      throw Exception('Failed to update tbill');
   }
 
   static Future<List<Tbill>> fetchTableTbills(
       http.Client client, String table) async {
     final response = await client.get(Uri.parse(_host + 'tbills/' + table));
+    if (response.statusCode == 404) {
+      return [];
+    }
+    return compute(parseTbills, response.body);
+  }
+
+  static Future<List<Tbill>> newfetchTableTbills(String table) async {
+    final response = await http.get(Uri.parse(_host + 'tbills/' + table));
     if (response.statusCode == 404) {
       return [];
     }
@@ -125,5 +160,22 @@ class ServerRequest {
     final response = await http.delete(Uri.parse(_host + 'tbills/' + tnumber));
     if (response.statusCode != 200)
       throw Exception('Failed to Delete tbillls');
+  }
+
+  static Future updateTable(int number, String total,) async {
+    final response = await http.put(
+      Uri.parse(_host + 'tables/' + number.toString()),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'number': number,
+        'total': total,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update Table');
+    }
   }
 }
