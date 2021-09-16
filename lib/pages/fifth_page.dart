@@ -16,7 +16,7 @@ import 'package:h_manage/server_request.dart';
 // TODO: Add a refresh button on server connection fail
 // TODO: Remove the 1st tab (index 0) and move that to a drawer maybe
 // TODO: Remove TotalTableBill in the Tables TAB when total is 0
-// TODO: Edit DataCells when possible (waiting for tickets)
+// TODO: Disable edit button (tbills items) when the Table has paid
 
 class FifthPage extends StatefulWidget {
   final String data;
@@ -229,7 +229,11 @@ class _FifthPageState extends State<FifthPage>
     print(tbillEntry.toString());
     final tbillBody = await Navigator.of(context)
         .pushNamed('/fifth/edit_bill_product', arguments: tbillEntry);
-    tbillBody as List<dynamic>;
+    if (tbillBody != null) tbillBody as bool;
+    if (tbillBody == true) {
+      refreshFuture();
+      updateBadge();
+    }
   }
 
   // Retrieves the current date in format yyyy-mm-dd
@@ -407,185 +411,194 @@ class _FifthPageState extends State<FifthPage>
                       if (snapshot.hasData) {
                         if (snapshot.requireData.length != 0) {
                           return Scaffold(
-                            body: SingleChildScrollView(
-                              child: Align(
-                                alignment: Alignment.topCenter,
-                                child: Wrap(
-                                  alignment: WrapAlignment.center,
-                                  spacing: 8.0,
-                                  runSpacing: 8.0,
-                                  children: [
-                                    PopulateDataTable(
-                                      tbills: snapshot.data!,
-                                      updateTbill: (List<dynamic> val) =>
-                                          editBillProduct(context, val),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.all(28.0),
-                                      child: Container(
-                                        height: 250,
-                                        width: 350,
-                                        decoration: BoxDecoration(
-                                          color: Colors.blue.shade50,
-                                          borderRadius:
-                                              BorderRadius.circular(15),
-                                        ),
-                                        child: ListView(
-                                          padding: const EdgeInsets.all(8),
-                                          children: [
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Container(
-                                                height: 50,
-                                                width: 350,
-                                                decoration: BoxDecoration(
-                                                  color: Colors.blue,
-                                                  borderRadius:
-                                                      BorderRadius.circular(15),
-                                                ),
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: Text(
-                                                        'Total',
-                                                        style: TextStyle(
-                                                          fontSize: 26,
-                                                          color: Colors.white,
-                                                          fontWeight:
-                                                              FontWeight.bold,
+                            body: Align(
+                              alignment: Alignment.topCenter,
+                              child: ListView(
+                                children: [
+                                  Wrap(
+                                    alignment: WrapAlignment.center,
+                                    spacing: 8.0,
+                                    runSpacing: 8.0,
+                                    children: [
+                                      PopulateDataTable(
+                                        tbills: snapshot.data!,
+                                        updateTbill: (List<dynamic> val) =>
+                                            editBillProduct(context, val),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.all(28.0),
+                                        child: Container(
+                                          height: 250,
+                                          width: 350,
+                                          decoration: BoxDecoration(
+                                            color: Colors.blue.shade50,
+                                            borderRadius:
+                                                BorderRadius.circular(15),
+                                          ),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Container(
+                                                  height: 50,
+                                                  width: 350,
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.blue,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            15),
+                                                  ),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: Text(
+                                                          'Total',
+                                                          style: TextStyle(
+                                                            fontSize: 26,
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
                                                         ),
                                                       ),
-                                                    ),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: Text(
-                                                        _totalTableBill
-                                                            .toStringAsFixed(2),
-                                                        style: TextStyle(
-                                                          fontSize: 28,
-                                                          color: Colors.white,
-                                                          fontWeight:
-                                                              FontWeight.bold,
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: Text(
+                                                          _totalTableBill
+                                                              .toStringAsFixed(
+                                                                  2),
+                                                          style: TextStyle(
+                                                            fontSize: 28,
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
                                                         ),
                                                       ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Container(
-                                                height: 50,
-                                                width: 350,
-                                                decoration: BoxDecoration(
-                                                  color: Colors.blue,
-                                                  borderRadius:
-                                                      BorderRadius.circular(15),
-                                                ),
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: Text(
-                                                        'Money',
-                                                        style: TextStyle(
-                                                          fontSize: 26,
-                                                          color: Colors.white,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: Text(
-                                                        _money
-                                                            .toStringAsFixed(2),
-                                                        style: TextStyle(
-                                                          fontSize: 28,
-                                                          color: Colors.white,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
+                                                    ],
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Container(
-                                                height: 50,
-                                                width: 350,
-                                                decoration: BoxDecoration(
-                                                  color: Colors.blue,
-                                                  borderRadius:
-                                                      BorderRadius.circular(15),
-                                                ),
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: Text(
-                                                        'Change',
-                                                        style: TextStyle(
-                                                          fontSize: 26,
-                                                          color: Colors.white,
-                                                          fontWeight:
-                                                              FontWeight.bold,
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Container(
+                                                  height: 50,
+                                                  width: 350,
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.blue,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            15),
+                                                  ),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: Text(
+                                                          'Money',
+                                                          style: TextStyle(
+                                                            fontSize: 26,
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
                                                         ),
                                                       ),
-                                                    ),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: Text(
-                                                        _change
-                                                            .toStringAsFixed(2),
-                                                        style: TextStyle(
-                                                          fontSize: 28,
-                                                          color: Colors.white,
-                                                          fontWeight:
-                                                              FontWeight.bold,
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: Text(
+                                                          _money
+                                                              .toStringAsFixed(
+                                                                  2),
+                                                          style: TextStyle(
+                                                            fontSize: 28,
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
                                                         ),
                                                       ),
-                                                    ),
-                                                  ],
+                                                    ],
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          ],
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Container(
+                                                  height: 50,
+                                                  width: 350,
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.blue,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            15),
+                                                  ),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: Text(
+                                                          'Change',
+                                                          style: TextStyle(
+                                                            fontSize: 26,
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: Text(
+                                                          _change
+                                                              .toStringAsFixed(
+                                                                  2),
+                                                          style: TextStyle(
+                                                            fontSize: 28,
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ],
-                                ),
+                                    ],
+                                  ),
+                                ],
                               ),
                             ),
                             floatingActionButton: Row(
@@ -676,55 +689,58 @@ class PopulateDataTable extends StatelessWidget {
     }
     return Padding(
       padding: EdgeInsets.all(15.0),
-      child: DataTable(
-        columns: [
-          const DataColumn(
-            label: Text(
-              'Units',
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 20,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: DataTable(
+          columns: [
+            const DataColumn(
+              label: Text(
+                'Units',
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 16,
+                ),
               ),
             ),
-          ),
-          const DataColumn(
-            label: Text(
-              'Product',
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 20,
+            const DataColumn(
+              label: Text(
+                'Product',
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 16,
+                ),
               ),
             ),
-          ),
-          const DataColumn(
-            label: Text(
-              'Price',
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 20,
+            const DataColumn(
+              label: Text(
+                'Price',
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 16,
+                ),
               ),
             ),
-          ),
-          const DataColumn(
-            label: Text(
-              'Total',
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 20,
+            const DataColumn(
+              label: Text(
+                'Total',
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 16,
+                ),
               ),
             ),
-          ),
-          const DataColumn(
-            label: Text(
-              '',
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 20,
+            const DataColumn(
+              label: Text(
+                '',
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 1,
+                ),
               ),
             ),
-          ),
-        ],
-        rows: itemRow,
+          ],
+          rows: itemRow,
+        ),
       ),
     );
   }
