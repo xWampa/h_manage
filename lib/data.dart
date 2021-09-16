@@ -71,7 +71,7 @@ class Tablee {
 // Create a Tbill object
 class Tbill {
   final int id;
-  final int tnumber;
+  final int? tnumber;
   final String item;
   final int units;
   final String iprice;
@@ -89,7 +89,7 @@ class Tbill {
   factory Tbill.fromJson(Map<String, dynamic> json) {
     return Tbill(
       id: json['id'] as int,
-      tnumber: json['tnumber'] as int,
+      tnumber: json['tnumber'] as int?,
       item: json['item'] as String,
       units: json['units'] as int,
       iprice: json['iprice'] as String,
