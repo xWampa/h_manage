@@ -75,7 +75,7 @@ class ServerRequest {
 
   static updateTbill(
       int tbillId,
-      int tnumber,
+      int? tnumber,
       String item,
       int units,
       String iprice,
