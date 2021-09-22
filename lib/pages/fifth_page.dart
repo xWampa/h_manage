@@ -17,6 +17,8 @@ import 'package:h_manage/server_request.dart';
 // TODO: Remove the 1st tab (index 0) and move that to a drawer maybe
 // TODO: Remove TotalTableBill in the Tables TAB when total is 0
 // TODO: Disable edit button (tbills items) when the Table has paid
+// TODO: Maybe add a transition to tbill-tab to prevent the abrupt refresh
+// TODO: Mejorar presentacion final (billetes, foto pa productos, cutom input pa cobrar)
 
 class FifthPage extends StatefulWidget {
   final String data;
@@ -257,28 +259,35 @@ class _FifthPageState extends State<FifthPage>
               child: ListView(
                 children: [
                   ListTile(
-                    title: Text('HManage'),
+                    title: Text(
+                        'HManage',
+                      style: TextStyle(
+                        fontSize: 23,
+                        color: Colors.blue,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                   ListTile(
                     title: Text('This is the title'),
-                    leading: Text('This is the leading'),
+                    leading: Icon(Icons.add),
                     subtitle: Text('This is the subtitle'),
                     onTap: () => print("handsome"),
                     onLongPress: () => print("ugly"),
                   ),
                   ListTile(
                     title: Text('This is the title'),
-                    leading: Text('This is the leading'),
+                    leading: Icon(Icons.print),
                     subtitle: Text('This is the subtitle'),
                   ),
                   ListTile(
                     title: Text('This is the title'),
-                    leading: Text('This is the leading'),
+                    leading: Icon(Icons.keyboard),
                     subtitle: Text('This is the subtitle'),
                   ),
                   ListTile(
                     title: Text('This is the title'),
-                    leading: Text('This is the leading'),
+                    leading: Icon(Icons.account_balance),
                     subtitle: Text('This is the subtitle'),
                   ),
                 ],
