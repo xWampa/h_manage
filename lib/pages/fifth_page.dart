@@ -1,8 +1,4 @@
-import 'dart:async';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 
@@ -18,7 +14,6 @@ import 'package:h_manage/server_request.dart';
 // TODO: Remove TotalTableBill in the Tables TAB when total is 0
 // TODO: Disable edit button (tbills items) when the Table has paid
 // TODO: Maybe add a transition to tbill-tab to prevent the abrupt refresh
-// TODO: Mejorar presentacion final (billetes, foto pa productos, cutom input pa cobrar)
 
 class FifthPage extends StatefulWidget {
   final String data;
@@ -627,14 +622,14 @@ class _FifthPageState extends State<FifthPage>
                                     cardPaymentRoutine();
                                   },
                                 ),
-                                FloatingActionButton(
-                                  heroTag: "more",
-                                  //child: Icon(Icons.add),
-                                  child: Text(
-                                    _totalTableBill.toStringAsFixed(2),
-                                  ),
-                                  onPressed: () {},
-                                ),
+                                // FloatingActionButton(
+                                //   heroTag: "more",
+                                //   //child: Icon(Icons.add),
+                                //   child: Text(
+                                //     _totalTableBill.toStringAsFixed(2),
+                                //   ),
+                                //   onPressed: () {},
+                                // ),
                               ],
                             ),
                           );

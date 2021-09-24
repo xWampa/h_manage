@@ -195,16 +195,16 @@ class _EditBillProductState extends State<EditBillProduct> {
               },
               child: const Text('Edit'),
             ),
-            ElevatedButton(
-              onPressed: () {
-                print(widget.id);
-                print(widget.units);
-                print(widget.product);
-                print(widget.price);
-                print(widget.total);
-              },
-              child: const Text('show'),
-            ),
+            // ElevatedButton(
+            //   onPressed: () {
+            //     print(widget.id);
+            //     print(widget.units);
+            //     print(widget.product);
+            //     print(widget.price);
+            //     print(widget.total);
+            //   },
+            //   child: const Text('show'),
+            // ),
           ],
         ),
       ),

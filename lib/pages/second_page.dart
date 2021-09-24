@@ -16,12 +16,12 @@ class SecondPage extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Text(
-              'PLACE',
-              style: TextStyle(fontSize: 50),
+              'PLACE 2',
+              style: TextStyle(fontSize: 45),
             ),
             Text(
               data,
-              style: TextStyle(fontSize: 20),
+              style: TextStyle(fontSize: 22),
             ),
             ElevatedButton(
               child: Text('Go to third'),

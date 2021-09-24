@@ -1,7 +1,5 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:escpos/escpos.dart';
 
 class SeventhPage extends StatefulWidget {
   const SeventhPage({Key? key, required this.title}) : super(key: key);
@@ -17,30 +15,13 @@ class SeventhPage extends StatefulWidget {
 class _SeventhPageState extends State<SeventhPage> {
   final TextEditingController _controllerHost = TextEditingController();
 
-  PrinterNetworkManager _printerManager = PrinterNetworkManager();
 
-  void initPrinter(String host) {
-    _printerManager.selectPrinter(
-        host, port: 9100, timeout: Duration(seconds: 5));
-  }
-
-  Future<void> _printNow() async {
-    final profile = await CapabilityProfile.load();
-    const PaperSize paper = PaperSize.mm80;
-    Ticket ticket = Ticket(paper, profile);
-    ticket.text('testing');
-    ticket.feed(2);
-    ticket.cut();
-
-    final PosPrintResult result = await _printerManager.printTicket(ticket);
-    print('Print result: ${result.msg}');
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Print test '),
+        title: const Text('Edit product: '),
       ),
       body: Container(
         alignment: Alignment.center,
@@ -74,8 +55,6 @@ class _SeventhPageState extends State<SeventhPage> {
         ElevatedButton(
           onPressed: () {
             print(_controllerHost.text);
-            initPrinter(_controllerHost.text);
-            _printNow();
           },
           child: const Text('Print'),
         ),

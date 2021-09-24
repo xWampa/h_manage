@@ -27,16 +27,10 @@ class _SixthPageState extends State<SixthPage> {
   }
   @override SixthPage get widget => super.widget;
   num _counter = 0;
-  List<int> listaInt = [200,100,50,20,10,5];
-  List<double> listaDouble = [2,1,0.5,0.2,0.1,0.05,0.02,0.01];
+  List<int> listInt = [200,100,50,20,10,5];
+  List<double> listDouble = [2,1,0.5,0.2,0.1,0.05,0.02,0.01];
 
   List<num> moneyChange = [0,0];
-
-  void _incrementCounter() {
-    setState(() {
-      _counter = _counter + widget.total;
-    });
-  }
 
   void _addMoney(num number) {
     setState(() {
@@ -68,13 +62,7 @@ class _SixthPageState extends State<SixthPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-            icon: Icon(Icons.print, color: Colors.red),
-            onPressed: (){
-            Navigator.pop(context, [0,0]);
-            }
-            ),
-        title: Text('Hola' + _counter.toString()),
+        title: Text('Payment table: ' + widget.tnumber.toString()),
       ),
       body: Center(
         child: Row(
@@ -84,24 +72,29 @@ class _SixthPageState extends State<SixthPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text(
-                  'Cash:',
-                ),
-                Text(
-                  _counter.toStringAsFixed(2),
-                  style: Theme.of(context).textTheme.headline4,
-                ),
-                Text(
                   'Total:',
                 ),
                 Text(
                   widget.total.toStringAsFixed(2),
                   style: Theme.of(context).textTheme.headline4,
                 ),
-                ...tablesView2(listaInt),
+                Text(
+                  'Cash:',
+                ),
+                Text(
+                  _counter.toStringAsFixed(2),
+                  style: Theme.of(context).textTheme.headline4,
+                ),
+                ...tablesView2(listInt),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    ...tablesView2(listDouble),
+                  ],
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ElevatedButton(onPressed: () => Navigator.pop(context), child: Text('Atras')),
                     ElevatedButton(onPressed: () => _clearMoney(), child: Text('Clear')),
                     ElevatedButton(
                       child: Text('OK'),
@@ -145,43 +138,30 @@ class _SixthPageState extends State<SixthPage> {
                 ),
               ],
             ),
-    //Coins
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                ...tablesView2(listaDouble),
-              ],
-            ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        heroTag: "sum",
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   heroTag: "sum",
+      //   onPressed: _incrementCounter,
+      //   tooltip: 'Increment',
+      //   child: Icon(Icons.add),
+      // ),
     );
   }
 
-  void stateSetter() {
-    setState(() {
-      _counter = 13;
-    });
-  }
-
-  List<Widget> tablesView2 (List<num> listaDeInts){
-    List<Widget> botones = [];
-    for(var individual in listaDeInts) {
-      // botones.add(Text(individual.number.toString()));
-      botones.add(
+  List<Widget> tablesView2 (List<num> listOfInts){
+    List<Widget> buttons = [];
+    for(var individual in listOfInts) {
+      // buttons.add(Text(individual.number.toString()));
+      buttons.add(
           ElevatedButton(
             child: Text(individual.toString() + '€'),
             onPressed: () => _addMoney(individual),
           )
       );
     }
-    return botones;
+    return buttons;
   }
 
 }
@@ -199,5 +179,3 @@ class ButtonWidget extends StatelessWidget {
     );
   }
 }
-
-

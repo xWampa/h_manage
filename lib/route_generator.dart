@@ -33,7 +33,7 @@ class RouteGenerator {
       case '/fourth':
         return MaterialPageRoute(
             builder: (_) => FourthPage(
-                  title: "comemeloswebosCuarta",
+                  title: "title fourth",
                 ));
       case '/fifth':
         return MaterialPageRoute(
@@ -55,7 +55,7 @@ class RouteGenerator {
       case '/seventh':
         return MaterialPageRoute(
             builder: (_) => SeventhPage(
-              title: "comemeloswebosCuarta",
+              title: "title for seventh",
             ));
 
       case '/fifth/edit_bill_product':
