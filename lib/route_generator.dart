@@ -61,13 +61,33 @@ class RouteGenerator {
       case '/fifth/edit_bill_product':
         if (args is List<dynamic>) {
           return MaterialPageRoute(builder: (_) =>
-          EditBillProduct(
-              id: args[0],
-              units: args[1],
-              product: args[2],
-              price: args[3],
-              total: args[4],
-          ));
+              EditBillProduct(
+                id: args[0],
+                units: args[1],
+                product: args[2],
+                price: args[3],
+                total: args[4],
+              ));
+        }
+        return _errorRoute();
+
+
+      case '/seventh/edit_product':
+        if (args is List<dynamic>) {
+          return MaterialPageRoute(builder: (_) =>
+              EditProduct(
+                id: args[0],
+                product: args[1],
+                price: args[2],
+                category: args[3],
+              ));
+        }
+        return _errorRoute();
+
+      case '/seventh/edit_product/open_image_page':
+        if (args is bool) {
+          return MaterialPageRoute(builder: (_) =>
+              OpenImagePage());
         }
         return _errorRoute();
 

@@ -186,9 +186,6 @@ class _EditBillProductState extends State<EditBillProduct> {
                       count,
                       itemPrice.toString(),
                       total.toString());
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Processing Data')),
-                  );
                   Navigator.pop(context, true);
                 }
 

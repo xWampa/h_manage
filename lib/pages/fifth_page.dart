@@ -228,6 +228,12 @@ class _FifthPageState extends State<FifthPage>
         .pushNamed('/fifth/edit_bill_product', arguments: tbillEntry);
     if (tbillBody != null) tbillBody as bool;
     if (tbillBody == true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: const Text('Data changed'),
+          duration: const Duration(milliseconds: 500),
+        ),
+      );
       refreshFuture();
       updateBadge();
     }
@@ -255,7 +261,7 @@ class _FifthPageState extends State<FifthPage>
                 children: [
                   ListTile(
                     title: Text(
-                        'HManage',
+                      'HManage',
                       style: TextStyle(
                         fontSize: 23,
                         color: Colors.blue,
@@ -264,10 +270,10 @@ class _FifthPageState extends State<FifthPage>
                     ),
                   ),
                   ListTile(
-                    title: Text('This is the title'),
-                    leading: Icon(Icons.add),
-                    subtitle: Text('This is the subtitle'),
-                    onTap: () => print("handsome"),
+                    leading: Icon(Icons.edit),
+                    title: Text('Edit a product'),
+                    subtitle: Text('Change its values'),
+                    onTap: () => Navigator.of(context).pushNamed('/seventh'),
                     onLongPress: () => print("ugly"),
                   ),
                   ListTile(
@@ -786,6 +792,7 @@ class ProductsView extends StatelessWidget {
               );
               updateFuture(tnumber);
             },
+            onLongPress: () => Navigator.of(context).pushNamed('/seventh'),
             child: Text(products[index].name));
       },
     );
