@@ -39,6 +39,28 @@ class ServerRequest {
     return parsed.map<Product>((json) => Product.fromJson(json)).toList();
   }
 
+  static updateProduct(
+      int id,
+      String product,
+      String price,
+      String category) async {
+    final response = await http.put(
+        Uri.parse(_host + 'products/' + id.toString()),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'productId': id,
+        'name': product,
+        'price': price,
+        'category': category,
+      }),
+    );
+
+    if (response.statusCode != 200)
+      throw Exception('Failed to update product $product');
+  }
+
   static Future<Tbill> createTbill(
       int tnumber, String item, int units, String iprice, String total) async {
     final response = await http.post(
