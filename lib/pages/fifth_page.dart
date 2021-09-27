@@ -366,6 +366,15 @@ class _FifthPageState extends State<FifthPage>
                                 arguments: 'I just pressed the new button');
                           },
                           child: Text('I am pretty famous last words')),
+                      // IconButton(
+                      //   onPressed: () {
+                      //     ServerRequest.updateTable(1, 10.toString());
+                      //   },
+                      //   icon: Image.network(
+                      //       'http://192.168.1.134:8888/img/1632618737942.png',
+                      //   ),
+                      //   iconSize: 100,
+                      // ),
                       ElevatedButton(
                           onPressed: () {
                             ServerRequest.updateTable(1, 10.toString());
@@ -781,7 +790,23 @@ class ProductsView extends StatelessWidget {
       padding: const EdgeInsets.all(10),
       itemCount: products.length,
       itemBuilder: (context, index) {
-        return ElevatedButton(
+        if (products[index].image == null) {
+          return ElevatedButton(
+              onPressed: () {
+                ServerRequest.createTbill(
+                  tnumber,
+                  products[index].name,
+                  1,
+                  products[index].price,
+                  products[index].price,
+                );
+                updateFuture(tnumber);
+              },
+              // TODO: create custom Tbill entry onLongPress
+              //onLongPress: () => Navigator.of(context).pushNamed('/seventh'),
+              child: Text(products[index].name));
+        } else {
+          return IconButton(
             onPressed: () {
               ServerRequest.createTbill(
                 tnumber,
@@ -792,8 +817,12 @@ class ProductsView extends StatelessWidget {
               );
               updateFuture(tnumber);
             },
-            onLongPress: () => Navigator.of(context).pushNamed('/seventh'),
-            child: Text(products[index].name));
+            icon: Image.network(
+              ServerRequest.getImageRoute() + products[index].image!,
+            ),
+            iconSize: 100,
+          );
+        }
       },
     );
   }

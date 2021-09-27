@@ -114,9 +114,9 @@ class ProductsViewEdit extends StatelessWidget {
                 products[index].name,
                 products[index].price,
                 products[index].category,
+                products[index].image,
               ]);
             },
-            onLongPress: () => Navigator.of(context).pushNamed('/seventh'),
             child: Text(products[index].name));
       },
     );

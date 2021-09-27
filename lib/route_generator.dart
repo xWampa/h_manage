@@ -80,6 +80,7 @@ class RouteGenerator {
                 product: args[1],
                 price: args[2],
                 category: args[3],
+                image: args[4],
               ));
         }
         return _errorRoute();

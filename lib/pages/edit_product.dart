@@ -3,7 +3,9 @@ import 'dart:io';
 import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
-
+import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
+import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:h_manage/server_request.dart';
@@ -15,12 +17,14 @@ class EditProduct extends StatefulWidget {
   final String product;
   final String price;
   final String category;
+  final String? image;
   EditProduct({
     Key? key,
     required this.id,
     required this.product,
     required this.price,
     required this.category,
+    this.image,
   }) : super(key: key);
 
   @override
@@ -30,6 +34,7 @@ class EditProduct extends StatefulWidget {
 class _EditProductState extends State<EditProduct> {
   int id = 0;
   num itemPrice = 0;
+  String imageRoute = '';
   bool justOnceProduct = true;
   bool justOnceCategory = true;
   bool productError = false;
@@ -56,6 +61,7 @@ class _EditProductState extends State<EditProduct> {
     super.initState();
     id = widget.id;
     itemPrice = num.parse(widget.price);
+    if (widget.image != null) imageRoute = widget.image!;
 
     _controllerProduct.text = widget.product;
     _controllerProduct.selection = TextSelection(
@@ -87,6 +93,7 @@ class _EditProductState extends State<EditProduct> {
     }
   }
 
+  // This is for Android
   Future selectImage() async {
     try {
       final image = await _picker.pickImage(source: ImageSource.gallery);
@@ -100,6 +107,26 @@ class _EditProductState extends State<EditProduct> {
     }
   }
 
+  // This is for Windows
+  void _openImageFile(BuildContext context) async {
+    final typeGroup = XTypeGroup(
+      label: 'images',
+      extensions: ['jpg', 'png'],
+    );
+    final files = await FileSelectorPlatform.instance
+        .openFiles(acceptedTypeGroups: [typeGroup]);
+    final file = files[0];
+    final fileName = file.name;
+    final filePath = file.path;
+
+    await showDialog(
+      context: context,
+      builder: (context) => ImageDisplay(fileName, filePath, id),
+    );
+  }
+
+
+
   Row resolveImageWidget() {
     if (Platform.isWindows) {
       return Row(
@@ -111,21 +138,21 @@ class _EditProductState extends State<EditProduct> {
           ),
           TextButton(
               onPressed: () async {
-                Navigator.of(context).pushNamed(
-                  '/seventh/edit_product/open_image_page',
-                  arguments: true,
-                );
+                // Navigator.of(context).pushNamed(
+                //   '/seventh/edit_product/open_image_page',
+                //   arguments: true,
+                // );
+                _openImageFile(context);
               },
-              child: Text('Select an Image')),
-          Icon(
-            Icons.image,
-            size: 16,
+              child:
+              imageRoute == '' ? Text('Select an Image') : Text(imageRoute)
           ),
-          image != null
-              ? Image.file(
-            image!,
-            width: 160,
-            height: 160,
+          if (imageRoute == '') Icon(Icons.image,size: 16,),
+          imageRoute != ''
+              ? Image.network(
+            ServerRequest.getImageRoute() + imageRoute,
+            width: 24,
+            height: 24,
           )
               : FlutterLogo(
             size: 24,
@@ -256,63 +283,6 @@ class _EditProductState extends State<EditProduct> {
               ],
             ),
             resolveImageWidget(),
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.center,
-            //   children: [
-            //     Text(
-            //       'Image: ',
-            //       style: TextStyle(fontSize: 18),
-            //     ),
-            //     TextButton(
-            //         onPressed: () async {
-            //           selectImage();
-            //         },
-            //         child: Text('Select an Image')),
-            //     Icon(
-            //       Icons.image,
-            //       size: 16,
-            //     ),
-            //     image != null
-            //         ? Image.file(
-            //             image!,
-            //             width: 160,
-            //             height: 160,
-            //           )
-            //         : FlutterLogo(
-            //             size: 24,
-            //           ),
-            //   ],
-            // ),
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.center,
-            //   children: [
-            //     Text(
-            //       'Image: ',
-            //       style: TextStyle(fontSize: 18),
-            //     ),
-            //     TextButton(
-            //         onPressed: () async {
-            //           Navigator.of(context).pushNamed(
-            //             '/seventh/edit_product/open_image_page',
-            //             arguments: true,
-            //           );
-            //         },
-            //         child: Text('Select an Image')),
-            //     Icon(
-            //       Icons.image,
-            //       size: 16,
-            //     ),
-            //     image != null
-            //         ? Image.file(
-            //             image!,
-            //             width: 160,
-            //             height: 160,
-            //           )
-            //         : FlutterLogo(
-            //             size: 24,
-            //           ),
-            //   ],
-            // ),
             ElevatedButton(
               onPressed: () {
                 setState(() {
@@ -338,6 +308,77 @@ class _EditProductState extends State<EditProduct> {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Widget that displays a text file in a dialog
+class ImageDisplay extends StatelessWidget {
+  /// Default Constructor
+  const ImageDisplay(this.fileName, this.filePath, this.fileNameDb);
+
+  /// Image's name
+  final String fileName;
+
+  /// Image's path
+  final String filePath;
+
+  /// Image's path rel to DB
+  final int fileNameDb;
+
+  Future uploadToServer(BuildContext context) async {
+    final uri = Uri.parse('http://192.168.1.134:8888/image');
+    var request = http.MultipartRequest('POST', uri);
+    request.fields['imageName'] = fileNameDb.toString() + '.' + getExt(fileName);
+    var pic = await http.MultipartFile.fromPath('photo', filePath);
+    request.files.add(pic);
+    var response = await request.send();
+
+    if (response.statusCode == 200) {
+      print('uploaded');
+      // TODO: Make sure that the request completes with success
+      // TODO: Rn you need to reload fifth to see changes, solve by setState
+      ServerRequest.updateProductImage(fileNameDb, fileNameDb.toString() + '.' + getExt(fileName));
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Image Updated')));
+    } else {
+      print('failed');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('FAILED')));
+    }
+  }
+  
+  String getExt(String filename) {
+    return filename.split(".")[1];
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(fileName),
+      // On web the filePath is a blob url
+      // while on other platforms it is a system path.
+      content: kIsWeb ? Image.network(filePath) : Image.file(File(filePath)),
+      actions: [
+        Row(
+          children: [
+            TextButton(
+              child: const Text('Close'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            TextButton(
+              child: const Text('Upload'),
+              onPressed: () {
+                uploadToServer(context);
+              },
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

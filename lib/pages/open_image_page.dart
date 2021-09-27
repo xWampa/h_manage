@@ -19,7 +19,7 @@ class OpenImagePage extends StatelessWidget {
 
     await showDialog(
       context: context,
-      builder: (context) => ImageDisplay(fileName, filePath),
+      builder: (context) => ImageDisplay2(fileName, filePath),
     );
   }
 
@@ -45,9 +45,9 @@ class OpenImagePage extends StatelessWidget {
 }
 
 /// Widget that displays a text file in a dialog
-class ImageDisplay extends StatelessWidget {
+class ImageDisplay2 extends StatelessWidget {
   /// Default Constructor
-  const ImageDisplay(this.fileName, this.filePath);
+  const ImageDisplay2(this.fileName, this.filePath);
 
   /// Image's name
   final String fileName;
@@ -58,6 +58,8 @@ class ImageDisplay extends StatelessWidget {
   Future uploadToServer() async {
     final uri = Uri.parse('http://192.168.1.134:8888/image');
     var request = http.MultipartRequest('POST', uri);
+    // TODO: subsitute Mbappez for the actual name
+    request.fields['imageName'] = 'Mbappez';
     var pic = await http.MultipartFile.fromPath('photo', filePath);
     request.files.add(pic);
     var response = await request.send();

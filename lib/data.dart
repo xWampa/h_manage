@@ -28,21 +28,23 @@ class Product {
   final String name;
   final String price;
   final String category;
+  final String? image;
 
   const Product({
     required this.id,
     required this.name,
     required this.price,
     required this.category,
+    required this.image,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
-
     return Product(
-        id: json['id'] as int,
-        name: json['name'] as String,
-        price: json['price'] as String,
-        category: json['category'] as String,
+      id: json['id'] as int,
+      name: json['name'] as String,
+      price: json['price'] as String,
+      category: json['category'] as String,
+      image: json['image'] as String?,
     );
   }
 }

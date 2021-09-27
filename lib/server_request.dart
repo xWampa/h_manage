@@ -8,6 +8,10 @@ import 'package:http/http.dart' as http;
 
 class ServerRequest {
   static String _host = 'http://192.168.1.134:8888/';
+
+  static String getImageRoute() {
+    return _host + 'img/';
+  }
   // Request to obtain all tables
   static Future<List<Tablee>> fetchTables(http.Client client) async {
     print('Doing the table fetchFunction');
@@ -59,6 +63,24 @@ class ServerRequest {
 
     if (response.statusCode != 200)
       throw Exception('Failed to update product $product');
+  }
+
+  static updateProductImage(int id, String image) async {
+    print(id);
+    print(image);
+    final response = await http.put(
+      Uri.parse(_host + 'products-img/' + id.toString()),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'productId': id,
+        'imageName': image,
+      }),
+    );
+
+    if (response.statusCode != 200)
+      throw Exception('Failed to update image path');
   }
 
   static Future<Tbill> createTbill(
