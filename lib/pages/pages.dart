@@ -8,3 +8,5 @@ export 'seventh_page.dart';
 export 'edit_bill_product.dart';
 export 'edit_product.dart';
 export 'open_image_page.dart';
+export 'create_product.dart';
+export 'zeta.dart';

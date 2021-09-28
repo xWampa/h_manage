@@ -27,9 +27,24 @@ class ServerRequest {
     return parsed.map<Tablee>((json) => Tablee.fromJson(json)).toList();
   }
 
+  // Function that creates a product
+  static createProduct(String name, String price, String category) async {
+    final response = await http.post(Uri.parse(_host + 'products'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'name': name,
+        'price': price,
+        'category': category,
+      }),
+    );
+    if (response.statusCode != 200)
+      throw Exception('Failed to create product $name');
+  }
+
   // Function that retrieves all the products from the server
   static Future<List<Product>> fetchProducts(http.Client client) async {
-    print('Doing a products fetchFunction');
     final response = await client.get(Uri.parse(_host + 'products'));
 
     // Using the compute function to run parseProducts in a separate isolate
@@ -39,7 +54,6 @@ class ServerRequest {
   // Function that converts a response body into a List<Product>
   static List<Product> parseProducts(String responseBody) {
     final parsed = jsonDecode(responseBody).cast<Map<String, dynamic>>();
-
     return parsed.map<Product>((json) => Product.fromJson(json)).toList();
   }
 

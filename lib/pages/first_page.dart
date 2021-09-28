@@ -35,7 +35,8 @@ class FirstPage extends StatelessWidget {
             ElevatedButton(
               child: Text('Go to fifth'),
               onPressed: () {
-                Navigator.of(context).pushNamed('/fifth');
+                Navigator.of(context)
+                    .pushNamedAndRemoveUntil('/fifth', (r) => false);
               },
             ),
             ElevatedButton(

@@ -71,6 +71,12 @@ class RouteGenerator {
         }
         return _errorRoute();
 
+      case '/fifth/create_product':
+          return MaterialPageRoute(builder: (_) =>
+              CreateProduct(
+              ));
+        //return _errorRoute();
+
 
       case '/seventh/edit_product':
         if (args is List<dynamic>) {
@@ -91,6 +97,11 @@ class RouteGenerator {
               OpenImagePage());
         }
         return _errorRoute();
+
+      case '/fifth/zeta':
+        return MaterialPageRoute(builder: (_) =>
+            Zeta());
+    //return _errorRoute();
 
       default:
         // If there is no such named route in the switch statement, eg /third

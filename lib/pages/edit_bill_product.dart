@@ -185,7 +185,8 @@ class _EditBillProductState extends State<EditBillProduct> {
                       _controllerProduct.text,
                       count,
                       itemPrice.toString(),
-                      total.toString());
+                      total.toString()
+                  );
                   Navigator.pop(context, true);
                 }
 

@@ -339,6 +339,7 @@ class ImageDisplay extends StatelessWidget {
       // TODO: Make sure that the request completes with success
       // TODO: Rn you need to reload fifth to see changes, solve by setState
       ServerRequest.updateProductImage(fileNameDb, fileNameDb.toString() + '.' + getExt(fileName));
+      Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Image Updated')));
     } else {

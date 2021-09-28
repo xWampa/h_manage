@@ -239,6 +239,7 @@ class _FifthPageState extends State<FifthPage>
     }
   }
 
+
   // Retrieves the current date in format yyyy-mm-dd
   String getDate() {
     DateTime now = DateTime.now();
@@ -256,44 +257,7 @@ class _FifthPageState extends State<FifthPage>
         child: ScaffoldMessenger(
           key: scaffoldMessengerKey,
           child: Scaffold(
-            drawer: Drawer(
-              child: ListView(
-                children: [
-                  ListTile(
-                    title: Text(
-                      'HManage',
-                      style: TextStyle(
-                        fontSize: 23,
-                        color: Colors.blue,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.edit),
-                    title: Text('Edit a product'),
-                    subtitle: Text('Change its values'),
-                    onTap: () => Navigator.of(context).pushNamed('/seventh'),
-                    onLongPress: () => print("ugly"),
-                  ),
-                  ListTile(
-                    title: Text('This is the title'),
-                    leading: Icon(Icons.print),
-                    subtitle: Text('This is the subtitle'),
-                  ),
-                  ListTile(
-                    title: Text('This is the title'),
-                    leading: Icon(Icons.keyboard),
-                    subtitle: Text('This is the subtitle'),
-                  ),
-                  ListTile(
-                    title: Text('This is the title'),
-                    leading: Icon(Icons.account_balance),
-                    subtitle: Text('This is the subtitle'),
-                  ),
-                ],
-              ),
-            ),
+            drawer: FifthPageDrawer(),
             appBar: AppBar(
               bottom: TabBar(
                 controller: _tabController,
@@ -329,6 +293,7 @@ class _FifthPageState extends State<FifthPage>
                   child: Column(
                     children: [
                       Tab(icon: Icon(Icons.directions_car)),
+                      Text('Provisional Tab for testing.'),
                       ElevatedButton(
                         child: Text('Go to main'),
                         onPressed: () {
@@ -377,7 +342,7 @@ class _FifthPageState extends State<FifthPage>
                       // ),
                       ElevatedButton(
                           onPressed: () {
-                            ServerRequest.updateTable(1, 10.toString());
+                            Navigator.pop(context);
                           },
                           child: Text('TEST PLACEHOLDER')),
                     ],
@@ -693,6 +658,7 @@ class PopulateDataTable extends StatelessWidget {
             DataCell(Text(item.item)),
             DataCell(Text(item.iprice)),
             DataCell(Text(item.total)),
+            // TODO: Disable this button on payment complete
             DataCell(Icon(Icons.edit), onTap: () {
               updateTbill([
                 item.id,
@@ -861,6 +827,88 @@ class TablesView extends StatelessWidget {
               ],
             ));
       },
+    );
+  }
+}
+
+class FifthPageDrawer extends StatelessWidget {
+  FifthPageDrawer({
+    Key? key,
+  }) : super(key: key);
+
+  // Goes to the create_product
+  void createProduct(BuildContext context) async {
+    final createdSnack = await Navigator.of(context)
+        .pushNamed('/fifth/create_product');
+    if (createdSnack != null) createdSnack as bool;
+    if (createdSnack == true) {
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: const Text('Product created'),
+          duration: const Duration(milliseconds: 1000),
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        children: [
+          ListTile(
+            title: Text(
+              'HManage',
+              style: TextStyle(
+                fontSize: 23,
+                color: Colors.blue,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          ListTile(
+            leading: Icon(Icons.add),
+            title: Text('Create a product'),
+            subtitle: Text('Insert a new product'),
+            onTap: () {
+
+              createProduct(context);
+            },
+            onLongPress: () => print("ugly"),
+          ),
+          ListTile(
+            leading: Icon(Icons.edit),
+            title: Text('Edit a product'),
+            subtitle: Text('Change product values'),
+            onTap: () {
+              Navigator.of(context).pushNamed('/seventh');
+            },
+            onLongPress: () => print("ugly"),
+          ),
+          ListTile(
+            leading: Icon(Icons.arrow_left),
+            title: Text('Close the drawer'),
+            subtitle: Text('This is the subtitle'),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            title: Text('This is the title'),
+            leading: Icon(Icons.keyboard),
+            subtitle: Text('This is the subtitle'),
+          ),
+          ListTile(
+            leading: Icon(Icons.account_balance),
+            title: Text('Resume of the day'),
+            subtitle: Text('Cash count'),
+            onTap: () {
+              Navigator.of(context).pushNamed('/fifth/zeta');
+            },
+          ),
+        ],
+      ),
     );
   }
 }
